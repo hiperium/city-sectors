@@ -1,6 +1,7 @@
 package hiperium.city.data.function.utils;
 
 import hiperium.city.data.function.dto.CityIdRequest;
+import hiperium.city.data.function.entities.City;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
@@ -24,7 +25,7 @@ public final class TestsUtils {
             .pollInterval(Duration.ofSeconds(3))    // check every 3 seconds
             .until(() -> {
                 DescribeTableRequest request = DescribeTableRequest.builder()
-                    .tableName(AppConstants.CITY_TABLE_NAME)
+                    .tableName(City.CITY_TABLE_NAME)
                     .build();
                 try {
                     TableStatus tableStatus = dynamoDbClient.describeTable(request).table().tableStatus();

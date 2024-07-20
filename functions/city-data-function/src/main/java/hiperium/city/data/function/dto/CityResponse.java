@@ -1,7 +1,5 @@
 package hiperium.city.data.function.dto;
 
-import java.util.Optional;
-
 /**
  * Represents a response object that contains information about a city.
  */
@@ -9,13 +7,44 @@ public record CityResponse(
 
     String id,
     String name,
-    RecordStatus status,
     String timezone,
     Integer httpStatus,
-    Optional<String> errorMessage) {
+    String errorMessage) {
 
-    public static final String ID_COLUMN_NAME = "id";
-    public static final String NAME_COLUMN_NAME = "name";
-    public static final String STATUS_COLUMN_NAME = "status";
-    public static final String TIMEZONE_COLUMN_NAME = "timezone";
+    public static class Builder {
+        private String id;
+        private String name;
+        private String timezone;
+        private Integer httpStatus;
+        private String errorMessage;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder timezone(String timezone) {
+            this.timezone = timezone;
+            return this;
+        }
+
+        public Builder httpStatus(Integer httpStatus) {
+            this.httpStatus = httpStatus;
+            return this;
+        }
+
+        public Builder errorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+            return this;
+        }
+
+        public CityResponse build() {
+            return new CityResponse(id, name, timezone, httpStatus, errorMessage);
+        }
+    }
 }

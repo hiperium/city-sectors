@@ -25,7 +25,7 @@ docker pull hiperium/native-image-builder:latest
 Tests are defined in the `functions/city-data-function/src/test` folder.
 Execute the following command to run the tests from the project's root directory:
 ```bash
-./mvnw test -f functions/city-events-function/pom.xml
+./mvnw test -f functions/city-data-function/pom.xml
 ```
 
 ---
@@ -48,7 +48,7 @@ curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
 ```
 
 Recall this is used only for local development and testing purposes.
-The other Spring profiles don"t have this feature enabled.
+The other Spring profiles don't have this feature enabled.
 
 ---
 ## Deploying Lambda function Locally using Docker Compose.
@@ -120,12 +120,12 @@ aws lambda invoke                         \
   --payload file://functions/city-data-function/src/test/resources/requests/lambda-valid-id-request.json \
   --cli-binary-format raw-in-base64-out   \
   --profile "city-dev"                    \
-  ~/Downloads/cities-response.json
+  ~/Downloads/city-data-response.json
 ```
 
 You must receive a response from the Lambda Function in the `response.json` file:
 ```bash
-cat response.json | jq
+cat ~/Downloads/city-data-response.json | jq
 ```
 
 ### SAM-CLI and APIs (not currently implemented).
@@ -136,8 +136,8 @@ sam local start-api
 curl http://localhost:3000/
 ```
 
-The SAM CLI reads the application template to determine the API"s routes and the functions that they invoke.
-The `Events` property on each function"s definition includes the route and method for each path.
+The SAM CLI reads the application template to determine the API route and the functions that they invoke.
+The `Events` property on each function's definition includes the route and method for each path.
 ```yaml
 Events:
     CitiesApi:

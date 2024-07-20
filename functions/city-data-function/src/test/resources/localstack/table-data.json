@@ -13,7 +13,34 @@
             "S": "Ecuador"
           },
           "status": {
-            "S": "ACT"
+            "S": "ENA"
+          },
+          "timezone": {
+            "S": "-05:00"
+          },
+          "createdAt": {
+            "S": "2020-07-01T00:00:00Z-05:00"
+          },
+          "updatedAt": {
+            "S": "2020-07-01T00:00:00Z-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {
+            "S": "a0ecb466-7ef5-47bf-a1ca-12f9f9328529"
+          },
+          "name": {
+            "S": "Disabled City"
+          },
+          "country": {
+            "S": "Disabled country"
+          },
+          "status": {
+            "S": "DIS"
           },
           "timezone": {
             "S": "-05:00"

@@ -2,6 +2,7 @@ package hiperium.city.data.function.mappers;
 
 import hiperium.city.data.function.dto.CityResponse;
 import hiperium.city.data.function.dto.RecordStatus;
+import hiperium.city.data.function.entities.City;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -24,13 +25,22 @@ public interface CityMapper {
      *                          and the values represent the corresponding attribute values.
      * @return A City object with the attribute values mapped from the itemAttributesMap.
      */
-    @Mapping(target = "id",           expression = "java(getStringValueFromAttributesMap(itemAttributesMap, CityResponse.ID_COLUMN_NAME))")
-    @Mapping(target = "name",         expression = "java(getStringValueFromAttributesMap(itemAttributesMap, CityResponse.NAME_COLUMN_NAME))")
-    @Mapping(target = "status",       expression = "java(getStatusEnumFromAttributesMap(itemAttributesMap))")
-    @Mapping(target = "timezone",     expression = "java(getStringValueFromAttributesMap(itemAttributesMap, CityResponse.TIMEZONE_COLUMN_NAME))")
-    @Mapping(target = "httpStatus",   constant   = "200")
-    @Mapping(target = "errorMessage", ignore     = true)
-    CityResponse toCityResponse(Map<String, AttributeValue> itemAttributesMap);
+    @Mapping(target = "id",       expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.ID_COLUMN_NAME))")
+    @Mapping(target = "name",     expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.NAME_COLUMN_NAME))")
+    @Mapping(target = "status",   expression = "java(getStatusEnumFromAttributesMap(itemAttributesMap))")
+    @Mapping(target = "country",  expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.COUNTRY_COLUMN_NAME))")
+    @Mapping(target = "timezone", expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.TIMEZONE_COLUMN_NAME))")
+    City toCity(Map<String, AttributeValue> itemAttributesMap);
+
+    /**
+     * Converts a City object, HTTP status code, and error message to a CityResponse object.
+     *
+     * @param city         The City object to convert.
+     * @param httpStatus   The HTTP status code.
+     * @param errorMessage The error message string.
+     * @return A CityResponse object with the converted data.
+     */
+    CityResponse toCityResponse(City city, int httpStatus, String errorMessage);
 
     /**
      * Retrieves the string value associated with the given key from the attribute map.
@@ -53,6 +63,6 @@ public interface CityMapper {
      * @return The RecordStatus enum value retrieved from the attributes map.
      */
     default RecordStatus getStatusEnumFromAttributesMap(Map<String, AttributeValue> itemAttributesMap) {
-        return RecordStatus.valueOf(this.getStringValueFromAttributesMap(itemAttributesMap, CityResponse.STATUS_COLUMN_NAME));
+        return RecordStatus.valueOf(this.getStringValueFromAttributesMap(itemAttributesMap, City.STATUS_COLUMN_NAME));
     }
 }

@@ -1,9 +1,9 @@
 package hiperium.city.data.function;
 
 import hiperium.city.data.function.common.TestContainersBase;
+import hiperium.city.data.function.configurations.FunctionsConfig;
 import hiperium.city.data.function.dto.CityIdRequest;
 import hiperium.city.data.function.dto.CityResponse;
-import hiperium.city.data.function.utils.AppConstants;
 import hiperium.city.data.function.utils.TestsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @FunctionalSpringBootTest(classes = FunctionalApplication.class)
 class FunctionalApplicationTest extends TestContainersBase {
 
-    private static final String EXISTING_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328528";
+    private static final String ENABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328528";
+    private static final String DISABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328529";
 
     @Autowired
     private DynamoDbClient dynamoDbClient;
@@ -38,19 +39,19 @@ class FunctionalApplicationTest extends TestContainersBase {
     }
 
     @Test
-    @DisplayName("CityResponse found")
-    void givenValidCityId_whenInvokeLambdaFunction_thenReturnCityData() {
+    @DisplayName("City found")
+    void givenEnabledCityId_whenInvokeLambdaFunction_thenReturnCityData() {
         Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
-        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(EXISTING_CITY_ID));
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(ENABLED_CITY_ID));
         CityResponse cityResponse = cityDataFunction.apply(message);
         assertThat(cityResponse).isNotNull();
-        assertThat(cityResponse.id()).isEqualTo(EXISTING_CITY_ID);
+        assertThat(cityResponse.id()).isEqualTo(ENABLED_CITY_ID);
         assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
-    @DisplayName("CityResponse not found")
-    void givenNonExistingCityId_whenInvokeLambdaFunction_thenReturnNull() {
+    @DisplayName("City not found")
+    void givenNonExistingCityId_whenInvokeLambdaFunction_thenReturnError() {
         Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
         Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest("non-existing-id"));
         CityResponse cityResponse = cityDataFunction.apply(message);
@@ -59,9 +60,20 @@ class FunctionalApplicationTest extends TestContainersBase {
         assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    @Test
+    @DisplayName("City disabled")
+    void givenDisabledCityId_whenInvokeLambdaFunction_thenReturnError() {
+        Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(DISABLED_CITY_ID));
+        CityResponse cityResponse = cityDataFunction.apply(message);
+        assertThat(cityResponse).isNotNull();
+        assertThat(cityResponse.id()).isNull();
+        assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
     private Function<Message<CityIdRequest>, CityResponse> getFunctionUnderTest() {
         Function<Message<CityIdRequest>, CityResponse> function = this.functionCatalog.lookup(Function.class,
-            AppConstants.FUNCTIONAL_BEAN_NAME);
+            FunctionsConfig.FIND_BY_ID_BEAN_NAME);
         assertThat(function).isNotNull();
         return function;
     }

@@ -2,8 +2,9 @@ package hiperium.city.data.function.functions;
 
 import hiperium.city.data.function.dto.CityIdRequest;
 import hiperium.city.data.function.dto.CityResponse;
+import hiperium.city.data.function.dto.RecordStatus;
+import hiperium.city.data.function.entities.City;
 import hiperium.city.data.function.mappers.CityMapper;
-import hiperium.city.data.function.utils.AppConstants;
 import hiperium.city.data.function.utils.BeanValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -46,29 +46,40 @@ public class CityDataFunction implements Function<Message<CityIdRequest>, CityRe
      */
     @Override
     public CityResponse apply(Message<CityIdRequest> cityIdRequestMessage) {
-        LOGGER.debug("Finding city with ID: {}", cityIdRequestMessage);
+        LOGGER.debug("Finding city by ID: {}", cityIdRequestMessage);
         CityIdRequest cityIdRequest = cityIdRequestMessage.getPayload();
         BeanValidationUtils.validateBean(cityIdRequest);
 
         HashMap<String, AttributeValue> keyToGet = new HashMap<>();
-        keyToGet.put("id", AttributeValue.builder().s(cityIdRequest.id()).build());
+        keyToGet.put(City.ID_COLUMN_NAME, AttributeValue.builder().s(cityIdRequest.id()).build());
         GetItemRequest request = GetItemRequest.builder()
             .key(keyToGet)
-            .tableName(AppConstants.CITY_TABLE_NAME)
+            .tableName(City.CITY_TABLE_NAME)
             .build();
 
         CityResponse response;
         try {
             Map<String, AttributeValue> returnedItem = this.dynamoDbClient.getItem(request).item();
             if (Objects.isNull(returnedItem) || returnedItem.isEmpty()) {
-                response = new CityResponse(null, null, null, null, HttpStatus.NOT_FOUND.value(), null);
+                response = new CityResponse.Builder()
+                    .httpStatus(HttpStatus.NOT_FOUND.value())
+                    .errorMessage("City not found.")
+                    .build();
             } else {
-                response = this.cityMapper.toCityResponse(returnedItem);
+                City city = this.cityMapper.toCity(returnedItem);
+                if (city.status().equals(RecordStatus.DIS)) {
+                    response = new CityResponse.Builder()
+                        .httpStatus(HttpStatus.NOT_ACCEPTABLE.value())
+                        .errorMessage("City is disabled.")
+                        .build();
+                } else {
+                    response = this.cityMapper.toCityResponse(city, HttpStatus.OK.value(), null);
+                }
             }
         } catch (DynamoDbException exception) {
             LOGGER.error("ERROR: When trying to find a City with ID '{}' >>> {}", cityIdRequest.id(), exception.getMessage());
-            response = new CityResponse(null, null, null, null, HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                Optional.of("Internal server error when trying to find City data."));
+            response = new CityResponse(null, null, null, HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal server error when trying to find City data.");
         }
         return response;
     }
