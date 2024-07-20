@@ -1,0 +1,33 @@
+#####################################################################################
+############################# Stage 1: Builder Image ################################
+#####################################################################################
+FROM amazoncorretto:21-alpine-jdk as builder
+
+WORKDIR /workspace
+RUN apk add --no-cache zip unzip
+
+COPY mvnw .
+COPY .mvn .mvn
+COPY city-data-function/pom.xml           city-data-function/pom.xml
+RUN  ./mvnw dependency:go-offline -B -f   city-data-function/pom.xml
+COPY city-data-function/src               city-data-function/src
+COPY city-data-function/tools/assembly    city-data-function/tools/assembly
+
+RUN ./mvnw -T 4C clean package -DskipTests -f city-data-function -Ddependency-check.skip=true && \
+    mkdir -p city-data-function/target/extracted                                              && \
+    (cd city-data-function/target; unzip jar-assembly.zip -d extracted)                       && \
+    (cd city-data-function/target/dependencies; zip -r ../dependencies.zip .)
+
+#####################################################################################
+############################ Stage 2: Application Image #############################
+#####################################################################################
+FROM public.ecr.aws/lambda/java:21-arm64
+
+ARG TARGET=/workspace/city-data-function/target
+
+COPY --from=builder ${TARGET}/extracted         ${LAMBDA_TASK_ROOT}
+COPY --from=builder ${TARGET}/*.jar             /var/tmp/function.jar
+COPY --from=builder ${TARGET}/dependencies.zip  /var/tmp/dependencies.zip
+
+EXPOSE 8080
+CMD [ "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest" ]

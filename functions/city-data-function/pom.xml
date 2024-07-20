@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>city.hiperium</groupId>
+        <artifactId>city-functions-parent</artifactId>
+        <version>1.0.2</version>
+        <relativePath/>
+    </parent>
+    <name>city-data-function</name>
+    <artifactId>city-data-function</artifactId>
+    <description>Returns City Data to internal services in the Hiperium City cloud.</description>
+
+    <properties>
+        <start-class>hiperium.city.data.function.FunctionalApplication</start-class>
+    </properties>
+
+    <dependencies>
+        <!-- SPRING CLOUD -->
+        <dependency>
+            <groupId>io.awspring.cloud</groupId>
+            <artifactId>spring-cloud-aws-starter-dynamodb</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>tools/assembly/jar.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <finalName>jar-assembly</finalName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jar-zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>tools/assembly/native.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>native-assembly</finalName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>native-zip</id>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

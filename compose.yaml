@@ -1,0 +1,37 @@
+name: "hiperium-cities"
+services:
+
+  city-data-function:
+    image: "hiperium/city-data-function:1.0.0"
+    container_name: "city-data-function"
+    build:
+      context: functions
+      dockerfile: city-data-function/tools/docker/Dockerfile-native
+    ports:
+      - "9000:8080"
+    env_file:
+      - commons/docker/functions.env
+    volumes:
+      - cities-data:/var/tmp
+    networks:
+      - "cities-network"
+
+  localstack:
+    extends:
+      file: functions/city-data-function/tools/docker/compose.yaml
+      service: "localstack"
+    container_name: "cities-localstack"
+    env_file:
+      - commons/docker/localstack.env
+    volumes:
+      - cities-data:/var/tmp
+    depends_on:
+      - "city-data-function"
+    networks:
+      - "cities-network"
+
+volumes:
+  cities-data:
+
+networks:
+  cities-network:
