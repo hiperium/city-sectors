@@ -2,7 +2,7 @@
 
 * **Author**: [Andres Solorzano](https://www.linkedin.com/in/aosolorzano/).
 * **Level**: 300 - Senior.
-* **Technologies**: GraalVM with Java 21, Spring Boot 3, Spring Cloud 4, Spring Native, Spring Modulith, Docker, Testcontainers, LocalStack, Amazon DynamoDB, AWS Lambda, and AWS SAM.
+* **Technologies**: GraalVM, Spring Boot, Spring Cloud, Spring Native, Spring Modulith, Docker, Testcontainers, LocalStack, Amazon DynamoDB, AWS Lambda, and AWS SAM.
 
 ![](utils/images/solution_architecture_diagram.png)
 
@@ -31,7 +31,7 @@ The project is divided into the following files/directories:
 ### Internal project folders.
 The internal project documentation is divided into the following directories:
 
-- **functions/city-data-function**: Contains a Lambda function that returns basic data from a DynamoDB table.
+- **functions/city-data-function**: Lambda function that returns basic data from a DynamoDB table.
 
 ---
 ### GraalVM Tracing Agent.
