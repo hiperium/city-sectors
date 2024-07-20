@@ -119,7 +119,8 @@ aws lambda invoke                         \
   --function-name "city-data-function"    \
   --payload file://functions/city-data-function/src/test/resources/requests/lambda-valid-id-request.json \
   --cli-binary-format raw-in-base64-out   \
-  --profile "city-dev" response.json
+  --profile "city-dev"                    \
+  ~/Downloads/cities-response.json
 ```
 
 You must receive a response from the Lambda Function in the `response.json` file:
