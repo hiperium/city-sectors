@@ -25,7 +25,7 @@ docker pull hiperium/native-image-builder:latest
 Tests are defined in the `functions/city-data-function/src/test` folder.
 Execute the following command to run the tests from the project's root directory:
 ```bash
-./mvnw test -f functions/city-data-function/pom.xml
+./mvnw test -f city-data-function/pom.xml
 ```
 
 ---
@@ -44,7 +44,7 @@ spring.docker.compose.file=functions/city-data-function/tools/docker/compose.yam
 Now, you can invoke the Lambda Function using the following command:
 ```bash
 curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
-  -d @functions/city-data-function/src/test/resources/requests/lambda-valid-id-request.json
+  -d @city-data-function/src/test/resources/requests/lambda-valid-id-request.json
 ```
 
 Recall this is used only for local development and testing purposes.
@@ -61,7 +61,7 @@ docker compose up --build
 The following command will invoke the Lambda Function using CURL:
 ```bash
 curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" \
-  -d @functions/city-data-function/src/test/resources/requests/lambda-valid-id-request.json
+  -d @city-data-function/src/test/resources/requests/lambda-valid-id-request.json
 ```
 
 ### Getting records from DynamoDB Locally.

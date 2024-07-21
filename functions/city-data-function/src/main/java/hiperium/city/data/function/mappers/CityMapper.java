@@ -1,7 +1,7 @@
 package hiperium.city.data.function.mappers;
 
 import hiperium.city.data.function.dto.CityResponse;
-import hiperium.city.data.function.dto.RecordStatus;
+import hiperium.city.data.function.entities.CityStatus;
 import hiperium.city.data.function.entities.City;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -56,13 +56,13 @@ public interface CityMapper {
     }
 
     /**
-     * Retrieves the RecordStatus enum value from the attribute map based on the specified column name.
+     * Retrieves the CityStatus enum value from the attribute map based on the specified column name.
      *
      * @param itemAttributesMap A map containing attribute values of a City object. The keys represent the column names of the City table, and the values represent the corresponding
      *  attribute values.
-     * @return The RecordStatus enum value retrieved from the attributes map.
+     * @return The CityStatus enum value retrieved from the attributes map.
      */
-    default RecordStatus getStatusEnumFromAttributesMap(Map<String, AttributeValue> itemAttributesMap) {
-        return RecordStatus.valueOf(this.getStringValueFromAttributesMap(itemAttributesMap, City.STATUS_COLUMN_NAME));
+    default CityStatus getStatusEnumFromAttributesMap(Map<String, AttributeValue> itemAttributesMap) {
+        return CityStatus.valueOf(this.getStringValueFromAttributesMap(itemAttributesMap, City.STATUS_COLUMN_NAME));
     }
 }

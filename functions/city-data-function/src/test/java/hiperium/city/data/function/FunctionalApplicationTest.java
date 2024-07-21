@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.function.context.FunctionCatalog;
 import org.springframework.cloud.function.context.test.FunctionalSpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.Message;
 import org.springframework.test.context.ActiveProfiles;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
+import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.util.function.Function;
@@ -27,6 +27,7 @@ class FunctionalApplicationTest extends TestContainersBase {
 
     private static final String ENABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328528";
     private static final String DISABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328529";
+    private static final String NON_EXISTING_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328530";
 
     @Autowired
     private DynamoDbClient dynamoDbClient;
@@ -42,50 +43,82 @@ class FunctionalApplicationTest extends TestContainersBase {
     @Test
     @DisplayName("City found")
     void givenEnabledCityId_whenInvokeLambdaFunction_thenReturnCityData() {
-        Function<Mono<CityIdRequest>, Mono<CityResponse>> cityDataFunction = this.getFunctionUnderTest();
-        Mono<CityResponse> cityResponseMono = cityDataFunction.apply(Mono.just(new CityIdRequest(ENABLED_CITY_ID)));
+        Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(ENABLED_CITY_ID));
+        CityResponse cityResponse = cityDataFunction.apply(message);
 
-        StepVerifier.create(cityResponseMono)
-            .assertNext(cityResponse -> {
-                assertThat(cityResponse).isNotNull();
-                assertThat(cityResponse.id()).isEqualTo(ENABLED_CITY_ID);
-                assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.OK.value());
-            })
-            .verifyComplete();
+        assertThat(cityResponse).isNotNull();
+        assertThat(cityResponse.id()).isEqualTo(ENABLED_CITY_ID);
+        assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("City not found")
     void givenNonExistingCityId_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Mono<CityIdRequest>, Mono<CityResponse>> cityDataFunction = this.getFunctionUnderTest();
-        Mono<CityResponse> cityResponseMono = cityDataFunction.apply(Mono.just(new CityIdRequest("non-existing-id")));
+        Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(NON_EXISTING_CITY_ID));
+        CityResponse cityResponse = cityDataFunction.apply(message);
 
-        StepVerifier.create(cityResponseMono)
-            .assertNext(cityResponse -> {
-                assertThat(cityResponse).isNotNull();
-                assertThat(cityResponse.id()).isNull();
-                assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-            })
-            .verifyComplete();
+        assertThat(cityResponse).isNotNull();
+        assertThat(cityResponse.id()).isNull();
+        assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(cityResponse.errorMessage()).isNotBlank();
     }
 
     @Test
     @DisplayName("City disabled")
     void givenDisabledCityId_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Mono<CityIdRequest>, Mono<CityResponse>> cityDataFunction = this.getFunctionUnderTest();
-        Mono<CityResponse> cityResponseMono = cityDataFunction.apply(Mono.just(new CityIdRequest(DISABLED_CITY_ID)));
+        Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(DISABLED_CITY_ID));
+        CityResponse cityResponse = cityDataFunction.apply(message);
 
-        StepVerifier.create(cityResponseMono)
-            .assertNext(cityResponse -> {
-                assertThat(cityResponse).isNotNull();
-                assertThat(cityResponse.id()).isNull();
-                assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-            })
-            .verifyComplete();
+        assertThat(cityResponse).isNotNull();
+        assertThat(cityResponse.id()).isNull();
+        assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(cityResponse.errorMessage()).isNotBlank();
     }
 
-    private Function<Mono<CityIdRequest>, Mono<CityResponse>> getFunctionUnderTest() {
-        Function<Mono<CityIdRequest>, Mono<CityResponse>> function = this.functionCatalog.lookup(Function.class,
+    @Test
+    @DisplayName("Null request parameter")
+    void givenNullRequestParam_whenInvokeLambdaFunction_thenReturnError() {
+        Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(null));
+        CityResponse cityResponse = cityDataFunction.apply(message);
+
+        assertThat(cityResponse).isNotNull();
+        assertThat(cityResponse.id()).isNull();
+        assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(cityResponse.errorMessage()).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("Blank request parameter")
+    void givenBlankRequestParam_whenInvokeLambdaFunction_thenReturnError() {
+        Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest(StringUtils.SPACE));
+        CityResponse cityResponse = cityDataFunction.apply(message);
+
+        assertThat(cityResponse).isNotNull();
+        assertThat(cityResponse.id()).isNull();
+        assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(cityResponse.errorMessage()).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("Invalid UUID request parameter")
+    void givenInvalidUuidParam_whenInvokeLambdaFunction_thenReturnError() {
+        Function<Message<CityIdRequest>, CityResponse> cityDataFunction = this.getFunctionUnderTest();
+        Message<CityIdRequest> message = TestsUtils.createMessage(new CityIdRequest("a0ecb466-7ef5-47bf-"));
+        CityResponse cityResponse = cityDataFunction.apply(message);
+
+        assertThat(cityResponse).isNotNull();
+        assertThat(cityResponse.id()).isNull();
+        assertThat(cityResponse.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(cityResponse.errorMessage()).isEqualTo("Invalid UUID");
+    }
+
+    private Function<Message<CityIdRequest>, CityResponse> getFunctionUnderTest() {
+        Function<Message<CityIdRequest>, CityResponse> function = this.functionCatalog.lookup(Function.class,
             FunctionsConfig.FIND_BY_ID_BEAN_NAME);
         assertThat(function).isNotNull();
         return function;

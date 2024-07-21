@@ -21,6 +21,9 @@
   "name":"[Ljava.lang.Class;"
 },
 {
+  "name":"[Ljava.lang.Object;"
+},
+{
   "name":"[Ljava.lang.String;"
 },
 {
@@ -172,7 +175,7 @@
   "name":"com.fasterxml.jackson.core.ObjectCodec",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"getJsonFactory","parameterTypes":[] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.ResolvedType"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.TypeReference"] }]
+  "methods":[{"name":"getJsonFactory","parameterTypes":[] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.ResolvedType"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.TypeReference"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","java.lang.Class"] }]
 },
 {
   "name":"com.fasterxml.jackson.core.TreeCodec",
@@ -372,6 +375,11 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }]
 },
 {
+  "name":"hiperium.city.data.function.annotations.ValidUUID",
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"groups","parameterTypes":[] }, {"name":"message","parameterTypes":[] }, {"name":"payload","parameterTypes":[] }, {"name":"validationAppliesTo","parameterTypes":[] }]
+},
+{
   "name":"hiperium.city.data.function.configurations.FunctionsConfig",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -389,12 +397,7 @@
   "name":"hiperium.city.data.function.dto.CityResponse",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"errorMessage","parameterTypes":[] }, {"name":"httpStatus","parameterTypes":[] }, {"name":"id","parameterTypes":[] }, {"name":"name","parameterTypes":[] }, {"name":"status","parameterTypes":[] }, {"name":"timezone","parameterTypes":[] }]
-},
-{
-  "name":"hiperium.city.data.function.dto.RecordStatus",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "methods":[{"name":"errorMessage","parameterTypes":[] }, {"name":"httpStatus","parameterTypes":[] }, {"name":"id","parameterTypes":[] }, {"name":"name","parameterTypes":[] }, {"name":"timezone","parameterTypes":[] }]
 },
 {
   "name":"hiperium.city.data.function.functions.CityDataFunction",
@@ -413,7 +416,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"toCityResponse","parameterTypes":["java.util.Map"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"toCity","parameterTypes":["java.util.Map"] }, {"name":"toCityResponse","parameterTypes":["hiperium.city.data.function.entities.City","int","java.lang.String"] }]
 },
 {
   "name":"io.awspring.cloud.autoconfigure.AwsClientProperties",
@@ -502,7 +505,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"dynamoDBTemplate","parameterTypes":["io.awspring.cloud.autoconfigure.dynamodb.DynamoDbProperties","software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient","java.util.Optional","java.util.Optional"] }, {"name":"dynamoDbEnhancedClient","parameterTypes":["software.amazon.awssdk.services.dynamodb.DynamoDbClient"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"dynamoDBTemplate","parameterTypes":["software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient","io.awspring.cloud.dynamodb.DynamoDbTableSchemaResolver","io.awspring.cloud.dynamodb.DynamoDbTableNameResolver"] }, {"name":"dynamoDbEnhancedClient","parameterTypes":["software.amazon.awssdk.services.dynamodb.DynamoDbClient"] }, {"name":"dynamoDbTableNameResolver","parameterTypes":["io.awspring.cloud.autoconfigure.dynamodb.DynamoDbProperties"] }, {"name":"dynamoDbTableSchemaResolver","parameterTypes":["java.util.List"] }]
 },
 {
   "name":"io.awspring.cloud.autoconfigure.dynamodb.DynamoDbAutoConfiguration$MissingDaxUrlCondition",
@@ -529,9 +532,32 @@
   "methods":[{"name":"close","parameterTypes":[] }, {"name":"getRegion","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }]
 },
 {
+  "name":"io.awspring.cloud.dynamodb.DefaultDynamoDbTableNameResolver",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"resolve","parameterTypes":["java.lang.Class"] }, {"name":"shutdown","parameterTypes":[] }]
+},
+{
+  "name":"io.awspring.cloud.dynamodb.DefaultDynamoDbTableSchemaResolver",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"resolve","parameterTypes":["java.lang.Class"] }, {"name":"shutdown","parameterTypes":[] }]
+},
+{
   "name":"io.awspring.cloud.dynamodb.DynamoDbOperations",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"io.awspring.cloud.dynamodb.DynamoDbTableNameResolver",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"io.awspring.cloud.dynamodb.DynamoDbTableSchemaResolver",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"resolve","parameterTypes":["java.lang.Class","java.lang.String"] }]
 },
 {
   "name":"io.awspring.cloud.dynamodb.DynamoDbTemplate",
@@ -946,10 +972,6 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "name":"io.netty.util.ResourceLeakDetector$DefaultResourceLeak",
-  "fields":[{"name":"droppedRecords"}, {"name":"head"}]
-},
-{
   "name":"io.netty.util.concurrent.DefaultPromise",
   "fields":[{"name":"result"}]
 },
@@ -1094,6 +1116,10 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"jakarta.validation.ReportAsSingleViolation",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"jakarta.validation.Validator",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
@@ -1107,9 +1133,14 @@
   "name":"jakarta.validation.bootstrap.GenericBootstrap"
 },
 {
-  "name":"jakarta.validation.constraints.NotNull",
+  "name":"jakarta.validation.constraints.NotBlank",
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"groups","parameterTypes":[] }, {"name":"message","parameterTypes":[] }, {"name":"payload","parameterTypes":[] }]
+},
+{
+  "name":"jakarta.validation.constraints.Pattern",
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"flags","parameterTypes":[] }, {"name":"groups","parameterTypes":[] }, {"name":"message","parameterTypes":[] }, {"name":"payload","parameterTypes":[] }, {"name":"regexp","parameterTypes":[] }]
 },
 {
   "name":"jakarta.validation.executable.ExecutableValidator"
@@ -1606,7 +1637,11 @@
   "name":"org.h2.server.web.JakartaWebServlet"
 },
 {
-  "name":"org.hibernate.validator.internal.constraintvalidators.bv.NotNullValidator",
+  "name":"org.hibernate.validator.internal.constraintvalidators.bv.NotBlankValidator",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -3668,14 +3703,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getStart","parameterTypes":[] }, {"name":"setEnabled","parameterTypes":["boolean"] }, {"name":"setFile","parameterTypes":["java.io.File"] }, {"name":"setLifecycleManagement","parameterTypes":["org.springframework.boot.docker.compose.lifecycle.LifecycleManagement"] }]
-},
-{
-  "name":"org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties$Start",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"setLogLevel","parameterTypes":["org.springframework.boot.logging.LogLevel"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setEnabled","parameterTypes":["boolean"] }, {"name":"setFile","parameterTypes":["java.io.File"] }, {"name":"setLifecycleManagement","parameterTypes":["org.springframework.boot.docker.compose.lifecycle.LifecycleManagement"] }]
 },
 {
   "name":"org.springframework.boot.docker.compose.lifecycle.LifecycleManagementEditor"
@@ -5529,7 +5557,8 @@
 {
   "name":"software.amazon.awssdk.auth.credentials.AwsCredentialsProvider",
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"identityType","parameterTypes":[] }, {"name":"resolveIdentity","parameterTypes":["software.amazon.awssdk.identity.spi.ResolveIdentityRequest"] }]
 },
 {
   "name":"software.amazon.awssdk.auth.credentials.StaticCredentialsProvider",
@@ -5571,6 +5600,12 @@
   "methods":[{"name":"batchGetItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchGetItem","parameterTypes":["software.amazon.awssdk.enhanced.dynamodb.model.BatchGetItemEnhancedRequest"] }, {"name":"batchWriteItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchWriteItem","parameterTypes":["software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest"] }, {"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }, {"name":"table","parameterTypes":["java.lang.String","software.amazon.awssdk.enhanced.dynamodb.TableSchema"] }, {"name":"transactGetItems","parameterTypes":["java.util.function.Consumer"] }, {"name":"transactGetItems","parameterTypes":["software.amazon.awssdk.enhanced.dynamodb.model.TransactGetItemsEnhancedRequest"] }, {"name":"transactWriteItems","parameterTypes":["java.util.function.Consumer"] }, {"name":"transactWriteItems","parameterTypes":["software.amazon.awssdk.enhanced.dynamodb.model.TransactWriteItemsEnhancedRequest"] }]
 },
 {
+  "name":"software.amazon.awssdk.identity.spi.IdentityProvider",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"resolveIdentity","parameterTypes":[] }, {"name":"resolveIdentity","parameterTypes":["java.util.function.Consumer"] }]
+},
+{
   "name":"software.amazon.awssdk.profiles.ProfileFile"
 },
 {
@@ -5582,13 +5617,13 @@
   "name":"software.amazon.awssdk.services.dynamodb.DefaultDynamoDbClient",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"batchExecuteStatement","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchExecuteStatementRequest"] }, {"name":"batchGetItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchGetItemRequest"] }, {"name":"batchGetItemPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchGetItemRequest"] }, {"name":"batchWriteItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest"] }, {"name":"close","parameterTypes":[] }, {"name":"createBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.CreateBackupRequest"] }, {"name":"createGlobalTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.CreateGlobalTableRequest"] }, {"name":"createTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.CreateTableRequest"] }, {"name":"deleteBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DeleteBackupRequest"] }, {"name":"deleteItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest"] }, {"name":"deleteTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest"] }, {"name":"describeBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeBackupRequest"] }, {"name":"describeContinuousBackups","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeContinuousBackupsRequest"] }, {"name":"describeContributorInsights","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeContributorInsightsRequest"] }, {"name":"describeEndpoints","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeEndpointsRequest"] }, {"name":"describeExport","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeExportRequest"] }, {"name":"describeGlobalTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeGlobalTableRequest"] }, {"name":"describeGlobalTableSettings","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeGlobalTableSettingsRequest"] }, {"name":"describeImport","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeImportRequest"] }, {"name":"describeKinesisStreamingDestination","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeKinesisStreamingDestinationRequest"] }, {"name":"describeLimits","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeLimitsRequest"] }, {"name":"describeTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest"] }, {"name":"describeTableReplicaAutoScaling","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeTableReplicaAutoScalingRequest"] }, {"name":"describeTimeToLive","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeTimeToLiveRequest"] }, {"name":"disableKinesisStreamingDestination","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DisableKinesisStreamingDestinationRequest"] }, {"name":"enableKinesisStreamingDestination","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.EnableKinesisStreamingDestinationRequest"] }, {"name":"executeStatement","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ExecuteStatementRequest"] }, {"name":"executeTransaction","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ExecuteTransactionRequest"] }, {"name":"exportTableToPointInTime","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ExportTableToPointInTimeRequest"] }, {"name":"getItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.GetItemRequest"] }, {"name":"importTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ImportTableRequest"] }, {"name":"listBackups","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListBackupsRequest"] }, {"name":"listContributorInsights","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListContributorInsightsRequest"] }, {"name":"listContributorInsightsPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListContributorInsightsRequest"] }, {"name":"listExports","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListExportsRequest"] }, {"name":"listExportsPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListExportsRequest"] }, {"name":"listGlobalTables","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListGlobalTablesRequest"] }, {"name":"listImports","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListImportsRequest"] }, {"name":"listImportsPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListImportsRequest"] }, {"name":"listTables","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListTablesRequest"] }, {"name":"listTablesPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListTablesRequest"] }, {"name":"listTagsOfResource","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListTagsOfResourceRequest"] }, {"name":"putItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.PutItemRequest"] }, {"name":"query","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.QueryRequest"] }, {"name":"queryPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.QueryRequest"] }, {"name":"restoreTableFromBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.RestoreTableFromBackupRequest"] }, {"name":"restoreTableToPointInTime","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.RestoreTableToPointInTimeRequest"] }, {"name":"scan","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ScanRequest"] }, {"name":"scanPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ScanRequest"] }, {"name":"serviceClientConfiguration","parameterTypes":[] }, {"name":"serviceName","parameterTypes":[] }, {"name":"tagResource","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.TagResourceRequest"] }, {"name":"transactGetItems","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.TransactGetItemsRequest"] }, {"name":"transactWriteItems","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.TransactWriteItemsRequest"] }, {"name":"untagResource","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UntagResourceRequest"] }, {"name":"updateContinuousBackups","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateContinuousBackupsRequest"] }, {"name":"updateContributorInsights","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateContributorInsightsRequest"] }, {"name":"updateGlobalTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateGlobalTableRequest"] }, {"name":"updateGlobalTableSettings","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateGlobalTableSettingsRequest"] }, {"name":"updateItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest"] }, {"name":"updateTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateTableRequest"] }, {"name":"updateTableReplicaAutoScaling","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateTableReplicaAutoScalingRequest"] }, {"name":"updateTimeToLive","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateTimeToLiveRequest"] }, {"name":"waiter","parameterTypes":[] }]
+  "methods":[{"name":"batchExecuteStatement","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchExecuteStatementRequest"] }, {"name":"batchGetItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchGetItemRequest"] }, {"name":"batchWriteItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest"] }, {"name":"close","parameterTypes":[] }, {"name":"createBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.CreateBackupRequest"] }, {"name":"createGlobalTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.CreateGlobalTableRequest"] }, {"name":"createTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.CreateTableRequest"] }, {"name":"deleteBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DeleteBackupRequest"] }, {"name":"deleteItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest"] }, {"name":"deleteTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest"] }, {"name":"describeBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeBackupRequest"] }, {"name":"describeContinuousBackups","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeContinuousBackupsRequest"] }, {"name":"describeContributorInsights","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeContributorInsightsRequest"] }, {"name":"describeEndpoints","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeEndpointsRequest"] }, {"name":"describeExport","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeExportRequest"] }, {"name":"describeGlobalTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeGlobalTableRequest"] }, {"name":"describeGlobalTableSettings","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeGlobalTableSettingsRequest"] }, {"name":"describeImport","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeImportRequest"] }, {"name":"describeKinesisStreamingDestination","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeKinesisStreamingDestinationRequest"] }, {"name":"describeLimits","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeLimitsRequest"] }, {"name":"describeTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest"] }, {"name":"describeTableReplicaAutoScaling","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeTableReplicaAutoScalingRequest"] }, {"name":"describeTimeToLive","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DescribeTimeToLiveRequest"] }, {"name":"disableKinesisStreamingDestination","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.DisableKinesisStreamingDestinationRequest"] }, {"name":"enableKinesisStreamingDestination","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.EnableKinesisStreamingDestinationRequest"] }, {"name":"executeStatement","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ExecuteStatementRequest"] }, {"name":"executeTransaction","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ExecuteTransactionRequest"] }, {"name":"exportTableToPointInTime","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ExportTableToPointInTimeRequest"] }, {"name":"getItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.GetItemRequest"] }, {"name":"importTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ImportTableRequest"] }, {"name":"listBackups","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListBackupsRequest"] }, {"name":"listContributorInsights","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListContributorInsightsRequest"] }, {"name":"listExports","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListExportsRequest"] }, {"name":"listGlobalTables","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListGlobalTablesRequest"] }, {"name":"listImports","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListImportsRequest"] }, {"name":"listTables","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListTablesRequest"] }, {"name":"listTagsOfResource","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListTagsOfResourceRequest"] }, {"name":"putItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.PutItemRequest"] }, {"name":"query","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.QueryRequest"] }, {"name":"restoreTableFromBackup","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.RestoreTableFromBackupRequest"] }, {"name":"restoreTableToPointInTime","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.RestoreTableToPointInTimeRequest"] }, {"name":"scan","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ScanRequest"] }, {"name":"serviceClientConfiguration","parameterTypes":[] }, {"name":"serviceName","parameterTypes":[] }, {"name":"tagResource","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.TagResourceRequest"] }, {"name":"transactGetItems","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.TransactGetItemsRequest"] }, {"name":"transactWriteItems","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.TransactWriteItemsRequest"] }, {"name":"untagResource","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UntagResourceRequest"] }, {"name":"updateContinuousBackups","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateContinuousBackupsRequest"] }, {"name":"updateContributorInsights","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateContributorInsightsRequest"] }, {"name":"updateGlobalTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateGlobalTableRequest"] }, {"name":"updateGlobalTableSettings","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateGlobalTableSettingsRequest"] }, {"name":"updateItem","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest"] }, {"name":"updateTable","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateTableRequest"] }, {"name":"updateTableReplicaAutoScaling","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateTableReplicaAutoScalingRequest"] }, {"name":"updateTimeToLive","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.UpdateTimeToLiveRequest"] }, {"name":"waiter","parameterTypes":[] }]
 },
 {
   "name":"software.amazon.awssdk.services.dynamodb.DynamoDbClient",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"batchExecuteStatement","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchGetItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchGetItemPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchWriteItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"createBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"createGlobalTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"createTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"deleteBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"deleteItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"deleteTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeContinuousBackups","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeContributorInsights","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeEndpoints","parameterTypes":[] }, {"name":"describeEndpoints","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeExport","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeGlobalTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeGlobalTableSettings","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeImport","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeKinesisStreamingDestination","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeLimits","parameterTypes":[] }, {"name":"describeLimits","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeTableReplicaAutoScaling","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeTimeToLive","parameterTypes":["java.util.function.Consumer"] }, {"name":"disableKinesisStreamingDestination","parameterTypes":["java.util.function.Consumer"] }, {"name":"enableKinesisStreamingDestination","parameterTypes":["java.util.function.Consumer"] }, {"name":"executeStatement","parameterTypes":["java.util.function.Consumer"] }, {"name":"executeTransaction","parameterTypes":["java.util.function.Consumer"] }, {"name":"exportTableToPointInTime","parameterTypes":["java.util.function.Consumer"] }, {"name":"getItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"importTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"listBackups","parameterTypes":[] }, {"name":"listBackups","parameterTypes":["java.util.function.Consumer"] }, {"name":"listContributorInsights","parameterTypes":["java.util.function.Consumer"] }, {"name":"listContributorInsightsPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listExports","parameterTypes":["java.util.function.Consumer"] }, {"name":"listExportsPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listGlobalTables","parameterTypes":[] }, {"name":"listGlobalTables","parameterTypes":["java.util.function.Consumer"] }, {"name":"listImports","parameterTypes":["java.util.function.Consumer"] }, {"name":"listImportsPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listTables","parameterTypes":[] }, {"name":"listTables","parameterTypes":["java.util.function.Consumer"] }, {"name":"listTablesPaginator","parameterTypes":[] }, {"name":"listTablesPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listTagsOfResource","parameterTypes":["java.util.function.Consumer"] }, {"name":"putItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"query","parameterTypes":["java.util.function.Consumer"] }, {"name":"queryPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"restoreTableFromBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"restoreTableToPointInTime","parameterTypes":["java.util.function.Consumer"] }, {"name":"scan","parameterTypes":["java.util.function.Consumer"] }, {"name":"scanPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"tagResource","parameterTypes":["java.util.function.Consumer"] }, {"name":"transactGetItems","parameterTypes":["java.util.function.Consumer"] }, {"name":"transactWriteItems","parameterTypes":["java.util.function.Consumer"] }, {"name":"untagResource","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateContinuousBackups","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateContributorInsights","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateGlobalTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateGlobalTableSettings","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateTableReplicaAutoScaling","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateTimeToLive","parameterTypes":["java.util.function.Consumer"] }]
+  "methods":[{"name":"batchExecuteStatement","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchGetItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchGetItemPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"batchGetItemPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.BatchGetItemRequest"] }, {"name":"batchWriteItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"createBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"createGlobalTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"createTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"deleteBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"deleteItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"deleteTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeContinuousBackups","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeContributorInsights","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeEndpoints","parameterTypes":[] }, {"name":"describeEndpoints","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeExport","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeGlobalTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeGlobalTableSettings","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeImport","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeKinesisStreamingDestination","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeLimits","parameterTypes":[] }, {"name":"describeLimits","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeTableReplicaAutoScaling","parameterTypes":["java.util.function.Consumer"] }, {"name":"describeTimeToLive","parameterTypes":["java.util.function.Consumer"] }, {"name":"disableKinesisStreamingDestination","parameterTypes":["java.util.function.Consumer"] }, {"name":"enableKinesisStreamingDestination","parameterTypes":["java.util.function.Consumer"] }, {"name":"executeStatement","parameterTypes":["java.util.function.Consumer"] }, {"name":"executeTransaction","parameterTypes":["java.util.function.Consumer"] }, {"name":"exportTableToPointInTime","parameterTypes":["java.util.function.Consumer"] }, {"name":"getItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"importTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"listBackups","parameterTypes":[] }, {"name":"listBackups","parameterTypes":["java.util.function.Consumer"] }, {"name":"listContributorInsights","parameterTypes":["java.util.function.Consumer"] }, {"name":"listContributorInsightsPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listContributorInsightsPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListContributorInsightsRequest"] }, {"name":"listExports","parameterTypes":["java.util.function.Consumer"] }, {"name":"listExportsPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listExportsPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListExportsRequest"] }, {"name":"listGlobalTables","parameterTypes":[] }, {"name":"listGlobalTables","parameterTypes":["java.util.function.Consumer"] }, {"name":"listImports","parameterTypes":["java.util.function.Consumer"] }, {"name":"listImportsPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listImportsPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListImportsRequest"] }, {"name":"listTables","parameterTypes":[] }, {"name":"listTables","parameterTypes":["java.util.function.Consumer"] }, {"name":"listTablesPaginator","parameterTypes":[] }, {"name":"listTablesPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"listTablesPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ListTablesRequest"] }, {"name":"listTagsOfResource","parameterTypes":["java.util.function.Consumer"] }, {"name":"putItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"query","parameterTypes":["java.util.function.Consumer"] }, {"name":"queryPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"queryPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.QueryRequest"] }, {"name":"restoreTableFromBackup","parameterTypes":["java.util.function.Consumer"] }, {"name":"restoreTableToPointInTime","parameterTypes":["java.util.function.Consumer"] }, {"name":"scan","parameterTypes":["java.util.function.Consumer"] }, {"name":"scanPaginator","parameterTypes":["java.util.function.Consumer"] }, {"name":"scanPaginator","parameterTypes":["software.amazon.awssdk.services.dynamodb.model.ScanRequest"] }, {"name":"tagResource","parameterTypes":["java.util.function.Consumer"] }, {"name":"transactGetItems","parameterTypes":["java.util.function.Consumer"] }, {"name":"transactWriteItems","parameterTypes":["java.util.function.Consumer"] }, {"name":"untagResource","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateContinuousBackups","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateContributorInsights","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateGlobalTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateGlobalTableSettings","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateItem","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateTable","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateTableReplicaAutoScaling","parameterTypes":["java.util.function.Consumer"] }, {"name":"updateTimeToLive","parameterTypes":["java.util.function.Consumer"] }]
 },
 {
   "name":"software.amazon.awssdk.services.sts.auth.StsWebIdentityTokenFileCredentialsProvider"

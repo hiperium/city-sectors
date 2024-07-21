@@ -4,7 +4,9 @@ set -e
 AWS_PROFILE=$1
 
 if [ -z "$AWS_PROFILE" ]; then
+    echo ""
     echo "ERROR: AWS Profile is required."
+    echo ""
     exit 1
 fi
 

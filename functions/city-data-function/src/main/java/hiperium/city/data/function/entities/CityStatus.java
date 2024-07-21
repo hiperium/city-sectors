@@ -1,9 +1,9 @@
-package hiperium.city.data.function.dto;
+package hiperium.city.data.function.entities;
 
 /**
  * Enum representing the possible status of a record.
  */
-public enum RecordStatus {
+public enum CityStatus {
     ENA,
     DIS
 }

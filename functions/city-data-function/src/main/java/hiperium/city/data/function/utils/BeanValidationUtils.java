@@ -8,7 +8,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 
 import java.util.Set;
 
@@ -22,18 +21,15 @@ public final class BeanValidationUtils {
     private BeanValidationUtils() {
     }
 
-    public static Mono<Void> validateBean(Mono<CityIdRequest> cityIdRequestMono) {
-        LOGGER.debug("Validating Request - START");
-        return cityIdRequestMono.flatMap(cityIdRequest -> {
-            try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-                Validator validator = factory.getValidator();
-                Set<ConstraintViolation<CityIdRequest>> violations = validator.validate(cityIdRequest);
-                if (!violations.isEmpty()) {
-                    ConstraintViolation<CityIdRequest> firstViolation = violations.iterator().next();
-                    return Mono.error(new ValidationException(firstViolation.getMessage()));
-                }
+    public static void validateBean(CityIdRequest cityIdRequest) {
+        LOGGER.debug("Validating request object: {}", cityIdRequest);
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<CityIdRequest>> violations = validator.validate(cityIdRequest);
+            if (!violations.isEmpty()) {
+                ConstraintViolation<CityIdRequest> firstViolation = violations.iterator().next();
+                throw new ValidationException(firstViolation.getMessage());
             }
-            return Mono.empty();
-        });
+        }
     }
 }
