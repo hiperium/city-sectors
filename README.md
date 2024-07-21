@@ -9,9 +9,9 @@
 ---
 ### Description.
 This project uses Spring Cloud Functions to create an AWS Lambda Function that returns basic data from a DynamoDB table.
-You can read the following article on my Medium.com account to get more project details:
+You can read the following article on Medium.com to get more project details:
 
-- [Using Spring Cloud AWS in Lambda functions to automate SDK client configurations](https://aosolorzano.medium.com/using-spring-cloud-aws-in-lambda-functions-to-automate-sdk-client-configurations-0e27c4beb588).
+- [Publishing POM files in Maven Central](https://medium.com/@aosolorzano/publishing-pom-files-in-maven-central-leveraging-on-amazon-route53-4eaa84aaef72).
 
 ---
 ### Prerequisites.
@@ -24,8 +24,9 @@ You can read the following article on my Medium.com account to get more project 
 ### Project Structure.
 The project is divided into the following files/directories:
 
-- **functions**: Directory used back-end functions.
+- **functions**: Directory used Lambda functions.
 - **utils**: Directory used for script files and other project documentation.
+- **common**: Directory used for common project files.
 
 ---
 ### Internal project folders.
