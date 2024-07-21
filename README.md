@@ -38,7 +38,7 @@ The internal project documentation is divided into the following directories:
 The Tracing Agent monitors our application’s behavior to see what classes, methods, and resources are being accessed dynamically. 
 Then, it outputs configuration files that describe this dynamic behavior. 
 These config files can be provided to the native-image utility when building a native image. 
-First, execute the following command starts the application with the Tracing Agent enabled:
+First, execute the following command from the `functions` directory to start the application with the Tracing Agent:
     
 ```bash
 ./mvnw clean process-classes        \
@@ -46,18 +46,18 @@ First, execute the following command starts the application with the Tracing Age
     -P tracing-agent
 ```
 
-Then, invoke the Lambda Function directly using the following command:
+Then, in a new terminal window, invoke the Lambda Function from the project's root directory:
 ```bash
 curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
-  -d @city-data-function/src/test/resources/requests/lambda-valid-id-request.json
+  -d @functions/city-data-function/src/test/resources/requests/lambda-valid-id-request.json
 ```
 
 At this point, the Tracing Agent will generate the necessary configuration files for the native-image utility.
 You can exit the application after the tests are completed by pressing `Ctrl+C`.
 Finally, copy the output files into the "META-INF/native-image" directory to be included by the native-image utility:
 ```bash
-cp -rf city-data-function/target/native-image/* \
-       city-data-function/src/main/resources/META-INF/native-image
+cp -rf functions/city-data-function/target/native-image/* \
+       functions/city-data-function/src/main/resources/META-INF/native-image
 ```
 
 After this, you can build the native image using as usual and make tests with the AWS Lambda Function.
