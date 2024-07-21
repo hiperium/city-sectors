@@ -2,17 +2,14 @@ package hiperium.city.data.function.utils;
 
 import hiperium.city.data.function.dto.CityIdRequest;
 import hiperium.city.data.function.entities.City;
-import org.springframework.lang.NonNull;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
+import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.dynamodb.model.TableStatus;
 
 import java.time.Duration;
-import java.util.Map;
 
 public final class TestsUtils {
 
@@ -34,20 +31,5 @@ public final class TestsUtils {
                     return false;
                 }
             });
-    }
-
-    public static Message<CityIdRequest> createMessage(CityIdRequest cityIdRequest) {
-        return new Message<>() {
-            @NonNull
-            @Override
-            public CityIdRequest getPayload() {
-                return cityIdRequest;
-            }
-            @NonNull
-            @Override
-            public MessageHeaders getHeaders() {
-                return new MessageHeaders(Map.of());
-            }
-        };
     }
 }

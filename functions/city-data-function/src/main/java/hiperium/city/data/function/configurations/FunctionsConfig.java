@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
+import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.util.function.Function;
@@ -37,7 +37,7 @@ public class FunctionsConfig {
      * @return The function that finds a city by its identifier.
      */
     @Bean(FIND_BY_ID_BEAN_NAME)
-    public Function<Message<CityIdRequest>, CityResponse> findById() {
+    public Function<Mono<CityIdRequest>, Mono<CityResponse>> findById() {
         LOGGER.debug("Configuring CityData Function...");
         return new CityDataFunction(this.cityMapper, this.dynamoDbClient);
     }
