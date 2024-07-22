@@ -17,14 +17,17 @@ services:
       - "cities-network"
 
   localstack:
-    extends:
-      file: functions/city-data-function/tools/spring/compose.yaml
-      service: "localstack"
+    image: "localstack/localstack:latest"
     container_name: "cities-localstack"
+    ports:
+      - "4566:4566"
     env_file:
       - commons/docker-compose/localstack.env
     volumes:
       - cities-data:/var/tmp
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./functions/city-data-function/src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json
+      - ./functions/city-data-function/src/test/resources/localstack/table-setup.sh:/etc/localstack/init/ready.d/table-setup.sh
     depends_on:
       - "city-data-function"
     networks:

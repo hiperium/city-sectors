@@ -104,7 +104,7 @@ menu() {
     *******************************************
     **************** Main Menu ****************
     *******************************************
-     1) Run with Docker Compose.
+     1) Docker Compose.
      2) Create Backend.
      3) Delete Backend.
     -------------------------------------------
@@ -120,10 +120,6 @@ menu() {
         ;;
     1)
         "$WORKING_DIR"/utils/scripts/1_deploy-docker-cluster.sh
-        clear
-        echo ""
-        echo "DONE!"
-        menu
         ;;
     2)
         printRemainingSessionTime
