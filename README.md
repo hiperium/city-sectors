@@ -54,11 +54,11 @@ curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
 ```
 
 At this point, the Tracing Agent will generate the necessary configuration files for the native-image utility.
-You can exit the application after the tests are completed by pressing `Ctrl+C`.
+You can exit the application after the request is completed by pressing `Ctrl+C`.
 Finally, copy the output files into the "META-INF/native-image" directory to be included by the native-image utility:
 ```bash
-cp -rf functions/city-data-function/target/native-image/* \
-       functions/city-data-function/src/main/resources/META-INF/native-image
+cp -rf city-data-function/target/native-image/* \
+       city-data-function/src/main/resources/META-INF/native-image
 ```
 
 After this, you can build the native image using as usual and make tests with the AWS Lambda Function.
