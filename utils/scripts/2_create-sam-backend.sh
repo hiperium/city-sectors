@@ -18,19 +18,18 @@ rm -rf "$WORKING_DIR"/functions/.aws-sam
 
 echo ""
 echo "VALIDATING SAM TEMPLATE..."
-sam validate --lint
+sam validate
 echo "DONE!"
 
 echo ""
 echo "BUILDING SAM PROJECT LOCALLY..."
-unbuffer sam build --config-env "$AWS_WORKLOADS_ENV"
+unbuffer sam build
 echo ""
 echo "DONE!"
 
 echo ""
 echo "DEPLOYING SAM PROJECT INTO AWS..."
 sam deploy                                                    \
-    --config-env "$AWS_WORKLOADS_ENV"                         \
     --parameter-overrides SpringProfile="$AWS_WORKLOADS_ENV"  \
     --no-confirm-changeset                                    \
     --disable-rollback                                        \
