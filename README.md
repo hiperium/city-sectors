@@ -42,7 +42,7 @@ These config files can be provided to the native-image utility when building a n
 First, execute the following command from the `functions` directory to start the application with the Tracing Agent:
     
 ```bash
-./mvnw clean process-classes        \
+mvn clean process-classes           \
     -f city-data-function/pom.xml   \
     -P tracing-agent
 ```

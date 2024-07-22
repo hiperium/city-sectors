@@ -13,12 +13,9 @@ echo "- Workloads Profile    : $AWS_WORKLOADS_PROFILE"
 echo "- Workloads Region     : $AWS_WORKLOADS_REGION"
 echo "- Workloads Environment: $AWS_WORKLOADS_ENV"
 
-### REMOVING SAM LOCAL ARTIFACTS
-rm -rf "$WORKING_DIR"/functions/.aws-sam
-
 echo ""
 echo "VALIDATING SAM TEMPLATE..."
-sam validate
+sam validate --lint
 echo "DONE!"
 
 echo ""

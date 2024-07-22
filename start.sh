@@ -119,7 +119,6 @@ menu() {
         helperMenu
         ;;
     1)
-        printRemainingSessionTime
         "$WORKING_DIR"/utils/scripts/1_deploy-docker-cluster.sh
         clear
         echo ""

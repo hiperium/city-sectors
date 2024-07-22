@@ -25,7 +25,7 @@ docker pull hiperium/native-image-builder:latest
 Tests are defined in the `functions/city-data-function/src/test` folder.
 Execute the following command to run the tests from the project's root directory:
 ```bash
-./mvnw test -f city-data-function/pom.xml
+mvn test -f city-data-function/pom.xml
 ```
 
 ---
@@ -38,7 +38,7 @@ so this profile configures the Docker Compose deployment for the LocalStack envi
 spring.docker.compose.enabled=true
 spring.docker.compose.start.log-level=debug
 spring.docker.compose.lifecycle-management=start_and_stop
-spring.docker.compose.file=functions/city-data-function/tools/docker/compose.yaml
+spring.docker.compose.file=functions/city-data-function/tools/spring/compose.yaml
 ```
 
 Now, you can invoke the Lambda Function using the following command:

@@ -2,7 +2,7 @@ name: "spring-cities"
 services:
 
   localstack:
-    image: "localstack/localstack:3.5"
+    image: "localstack/localstack:latest"
     container_name: "spring-cities-localstack"
     ports:
       - "4566:4566"

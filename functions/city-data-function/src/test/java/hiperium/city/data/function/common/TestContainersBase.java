@@ -17,7 +17,7 @@ public abstract class TestContainersBase {
     // Singleton containers.
     // See: https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers
     static {
-        LOCALSTACK_CONTAINER = new LocalStackContainer(DockerImageName.parse("localstack/localstack:3.5"))
+        LOCALSTACK_CONTAINER = new LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
             .withServices(LocalStackContainer.Service.DYNAMODB)
             .withCopyToContainer(MountableFile.forClasspathResource("localstack/table-setup.sh"),
                 "/etc/localstack/init/ready.d/table-setup.sh")

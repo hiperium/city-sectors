@@ -18,7 +18,7 @@ services:
 
   localstack:
     extends:
-      file: functions/city-data-function/tools/docker/compose.yaml
+      file: functions/city-data-function/tools/spring/compose.yaml
       service: "localstack"
     container_name: "cities-localstack"
     env_file:

@@ -2,20 +2,25 @@
 ############################# Stage 1: Builder Image ################################
 #####################################################################################
 FROM amazoncorretto:21-alpine-jdk as builder
-
 WORKDIR /workspace
-RUN apk add --no-cache zip unzip
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY city-data-function/pom.xml           city-data-function/pom.xml
-RUN  ./mvnw dependency:go-offline -B -f   city-data-function/pom.xml
-COPY city-data-function/src               city-data-function/src
-COPY city-data-function/tools/assembly    city-data-function/tools/assembly
+### Maven - Verify latest version at: https://dlcdn.apache.org/maven/maven-3/
+ENV MAVEN_VERSION 3.9.8
+ENV MAVEN_HOME /usr/lib/mvn
+ENV PATH $MAVEN_HOME/bin:$PATH
 
-RUN ./mvnw -T 4C clean package -DskipTests -f city-data-function -Ddependency-check.skip=true && \
-    mkdir -p city-data-function/target/extracted                                              && \
-    (cd city-data-function/target; unzip jar-assembly.zip -d extracted)                       && \
+RUN apk add --no-cache zip unzip curl tar bash  && \
+    mkdir -p $MAVEN_HOME                        && \
+    curl -fsSL https://dlcdn.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz | tar xzf - -C $MAVEN_HOME --strip-components=1
+
+COPY city-data-function/pom.xml         city-data-function/pom.xml
+RUN  mvn dependency:go-offline -B -f    city-data-function/pom.xml
+COPY city-data-function/src             city-data-function/src
+COPY city-data-function/tools/assembly  city-data-function/tools/assembly
+
+RUN mvn -T 4C clean package -DskipTests -f city-data-function/pom.xml -Ddependency-check.skip=true && \
+    mkdir -p city-data-function/target/extracted                                                   && \
+    (cd city-data-function/target; unzip jar-assembly.zip -d extracted)                            && \
     (cd city-data-function/target/dependencies; zip -r ../dependencies.zip .)
 
 #####################################################################################
