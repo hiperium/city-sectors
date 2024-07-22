@@ -21,6 +21,11 @@ public final class BeanValidationUtils {
     private BeanValidationUtils() {
     }
 
+    /**
+     * Validates a CityIdRequest object using bean validation.
+     *
+     * @param cityIdRequest The CityIdRequest object to be validated.
+     */
     public static void validateBean(CityIdRequest cityIdRequest) {
         LOGGER.debug("Validating request object: {}", cityIdRequest);
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {

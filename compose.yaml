@@ -10,7 +10,7 @@ services:
     ports:
       - "9000:8080"
     env_file:
-      - common/docker/functions.env
+      - commons/docker-compose/function.env
     volumes:
       - cities-data:/var/tmp
     networks:
@@ -22,7 +22,7 @@ services:
       service: "localstack"
     container_name: "cities-localstack"
     env_file:
-      - common/docker/localstack.env
+      - commons/docker-compose/localstack.env
     volumes:
       - cities-data:/var/tmp
     depends_on:

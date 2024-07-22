@@ -25,7 +25,7 @@ public final class TestsUtils {
             .pollInterval(Duration.ofSeconds(3))    // check every 3 seconds
             .until(() -> {
                 DescribeTableRequest request = DescribeTableRequest.builder()
-                    .tableName(City.CITY_TABLE_NAME)
+                    .tableName(City.TABLE_NAME)
                     .build();
                 try {
                     TableStatus tableStatus = dynamoDbClient.describeTable(request).table().tableStatus();
@@ -43,6 +43,7 @@ public final class TestsUtils {
             public CityIdRequest getPayload() {
                 return cityIdRequest;
             }
+
             @NonNull
             @Override
             public MessageHeaders getHeaders() {

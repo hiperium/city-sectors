@@ -1,8 +1,8 @@
 package hiperium.city.data.function.mappers;
 
 import hiperium.city.data.function.dto.CityResponse;
-import hiperium.city.data.function.entities.CityStatus;
 import hiperium.city.data.function.entities.City;
+import hiperium.city.data.function.entities.CityStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;

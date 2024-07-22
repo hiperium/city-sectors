@@ -11,7 +11,7 @@ public record City(
     String timezone,
     CityStatus status) {
 
-    public static final String CITY_TABLE_NAME = "Cities";
+    public static final String TABLE_NAME = "Cities";
 
     public static final String ID_COLUMN_NAME = "id";
     public static final String NAME_COLUMN_NAME = "name";

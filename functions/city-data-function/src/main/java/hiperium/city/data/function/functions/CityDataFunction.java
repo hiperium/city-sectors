@@ -47,12 +47,12 @@ public class CityDataFunction implements Function<Message<CityIdRequest>, CityRe
      */
     @Override
     public CityResponse apply(Message<CityIdRequest> cityIdRequestMessage) {
-        LOGGER.debug("Finding city by ID: {}", cityIdRequestMessage);
+        LOGGER.debug("Finding City by ID: {}", cityIdRequestMessage);
         CityIdRequest cityIdRequest = cityIdRequestMessage.getPayload();
         try {
             BeanValidationUtils.validateBean(cityIdRequest);
         } catch (ValidationException exception) {
-            LOGGER.error("ERROR: Invalid City ID '{}'. Message: {}", cityIdRequest.id(), exception.getMessage());
+            LOGGER.error("ERROR: Invalid City ID request: '{}'", exception.getMessage());
             return new CityResponse.Builder()
                 .httpStatus(HttpStatus.BAD_REQUEST.value())
                 .errorMessage(exception.getMessage())
@@ -63,7 +63,7 @@ public class CityDataFunction implements Function<Message<CityIdRequest>, CityRe
         keyToGet.put(City.ID_COLUMN_NAME, AttributeValue.builder().s(cityIdRequest.id()).build());
         GetItemRequest request = GetItemRequest.builder()
             .key(keyToGet)
-            .tableName(City.CITY_TABLE_NAME)
+            .tableName(City.TABLE_NAME)
             .build();
 
         CityResponse response;
@@ -76,7 +76,7 @@ public class CityDataFunction implements Function<Message<CityIdRequest>, CityRe
                     .build();
             } else {
                 City city = this.cityMapper.toCity(returnedItem);
-                if (city.status().equals(CityStatus.DIS)) {
+                if (city.status().equals(CityStatus.DISABLED)) {
                     response = new CityResponse.Builder()
                         .httpStatus(HttpStatus.NOT_ACCEPTABLE.value())
                         .errorMessage("City is disabled.")
