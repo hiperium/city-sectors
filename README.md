@@ -42,8 +42,8 @@ These config files can be provided to the native-image utility when building a n
 First, execute the following command from the `functions` directory to start the application with the Tracing Agent:
     
 ```bash
-mvn clean process-classes           \
-    -f city-data-function/pom.xml   \
+mvn clean process-classes                     \
+    -f functions/city-data-function/pom.xml   \
     -P tracing-agent
 ```
 
@@ -57,8 +57,8 @@ At this point, the Tracing Agent will generate the necessary configuration files
 You can exit the application after the request is completed by pressing `Ctrl+C`.
 Finally, copy the output files into the "META-INF/native-image" directory to be included by the native-image utility:
 ```bash
-cp -rf city-data-function/target/native-image/* \
-       city-data-function/src/main/resources/META-INF/native-image
+cp -rf functions/city-data-function/target/native-image/* \
+       functions/city-data-function/src/main/resources/META-INF/native-image
 ```
 
 After this, you can build the native image using as usual and make tests with the AWS Lambda Function.
