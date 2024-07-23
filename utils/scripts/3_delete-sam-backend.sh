@@ -9,9 +9,10 @@ cd "$WORKING_DIR"/functions || {
 echo ""
 echo "AWS INFORMATION:"
 echo ""
-echo "- Workloads Profile    : $AWS_WORKLOADS_PROFILE"
-echo "- Workloads Region     : $AWS_WORKLOADS_REGION"
 echo "- Workloads Environment: $AWS_WORKLOADS_ENV"
+echo "- Workloads Profile    : $AWS_WORKLOADS_PROFILE"
+echo "- Workloads Account    : $AWS_WORKLOADS_ACCOUNT_ID"
+echo "- Workloads Region     : $AWS_WORKLOADS_REGION"
 
 echo ""
 echo "DELETING SAM PROJECT FROM <WORKLOADS> ACCOUNT..."

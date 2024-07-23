@@ -22,6 +22,10 @@ function setEnvironmentVariables() {
     export AWS_WORKLOADS_PROFILE
     "$WORKING_DIR"/utils/scripts/common/verify-aws-profile-existence.sh "$AWS_WORKLOADS_PROFILE"
 
+    ### AWS ACCOUNTS
+    AWS_WORKLOADS_ACCOUNT_ID=$(aws configure get sso_account_id --profile "$AWS_WORKLOADS_PROFILE")
+    export AWS_WORKLOADS_ACCOUNT_ID
+
     ### AWS REGIONS
     AWS_WORKLOADS_REGION=$(aws configure get region --profile "$AWS_WORKLOADS_PROFILE")
     export AWS_WORKLOADS_REGION
