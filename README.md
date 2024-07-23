@@ -69,7 +69,7 @@ So far, we have only one deployment option for the Lambda Function as this proje
 This option is using SAM CLI to deploy the Lambda Function to AWS.
 You can execute the following script to show you the deployment options:
 ```bash
-./start.sh
+./setup.sh
 ```
 
 Select the default option to deploy the Lambda Function to AWS.

@@ -32,7 +32,6 @@ helperMenu() {
     *********************************************
     **************** Helper Menu ****************
     *********************************************
-      a) Revert Automation Files.
       b) Prune Docker System.
       c) Remaining Session Time.
       d) Print Environment Variables.
@@ -43,13 +42,6 @@ helperMenu() {
     "
     read -r -p 'Choose an option: ' option
     case $option in
-    [Aa])
-        "$WORKING_DIR"/utils/scripts/helper/init-sam-config-files.sh
-        clear
-        echo ""
-        echo "DONE!"
-        helperMenu
-        ;;
     [Bb])
         clear
         "$WORKING_DIR"/utils/scripts/common/docker-system-prune.sh
