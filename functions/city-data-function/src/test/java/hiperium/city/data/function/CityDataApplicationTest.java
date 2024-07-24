@@ -22,8 +22,8 @@ import java.util.function.Function;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
-@FunctionalSpringBootTest(classes = FunctionalApplication.class)
-class FunctionalApplicationTest extends TestContainersBase {
+@FunctionalSpringBootTest(classes = CityDataApplication.class)
+class CityDataApplicationTest extends TestContainersBase {
 
     private static final String ENABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328528";
     private static final String DISABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328529";

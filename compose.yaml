@@ -10,7 +10,7 @@ services:
     ports:
       - "9000:8080"
     env_file:
-      - commons/docker-compose/function.env
+      - commons/docker-compose/functions.env
     volumes:
       - cities-data:/var/tmp
     networks:

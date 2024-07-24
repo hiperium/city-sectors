@@ -27,7 +27,7 @@ public final class BeanValidationUtils {
      * @param cityIdRequest The CityIdRequest object to be validated.
      */
     public static void validateBean(CityIdRequest cityIdRequest) {
-        LOGGER.debug("Validating request object: {}", cityIdRequest);
+        LOGGER.debug("Validating request: {}", cityIdRequest);
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
             Set<ConstraintViolation<CityIdRequest>> violations = validator.validate(cityIdRequest);

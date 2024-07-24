@@ -19,7 +19,7 @@ import java.util.function.Function;
 @Configuration(proxyBeanMethods=false)
 public class FunctionsConfig {
 
-    public static final String FIND_BY_ID_BEAN_NAME = "findById";
+    public static final String FIND_BY_ID_BEAN_NAME = "findByIdFunction";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionsConfig.class);
 
@@ -37,7 +37,7 @@ public class FunctionsConfig {
      * @return The function that finds a city by its identifier.
      */
     @Bean(FIND_BY_ID_BEAN_NAME)
-    public Function<Message<CityIdRequest>, CityResponse> findById() {
+    public Function<Message<CityIdRequest>, CityResponse> findByIdFunction() {
         LOGGER.debug("Configuring CityData Function...");
         return new CityDataFunction(this.cityMapper, this.dynamoDbClient);
     }

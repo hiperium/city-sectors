@@ -35,8 +35,11 @@ sam deploy                                                    \
 echo ""
 echo "DONE!"
 
-echo ""
-echo "LOADING DATA INTO DYNAMODB..."
-aws dynamodb batch-write-item \
-  --request-items file://"$WORKING_DIR"/functions/city-data-function/src/test/resources/localstack/table-data.json \
-  --profile "$AWS_WORKLOADS_PROFILE" > /dev/null
+### LOADING TEST DATA INTO DYNAMODB ONLY IN DEV ENVIRONMENT
+if [ "$AWS_WORKLOADS_ENV" == "dev" ]; then
+    echo ""
+    echo "LOADING DATA INTO DYNAMODB..."
+    aws dynamodb batch-write-item \
+      --request-items file://"$WORKING_DIR"/functions/city-data-function/src/test/resources/localstack/table-data.json \
+      --profile "$AWS_WORKLOADS_PROFILE" > /dev/null
+fi
