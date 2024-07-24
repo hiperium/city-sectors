@@ -26,6 +26,7 @@ services:
     volumes:
       - cities-data:/var/tmp
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./commons/docker-compose/lambda-natives-setup.sh:/etc/localstack/init/ready.d/lambda-natives-setup.sh
       - ./functions/city-data-function/src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json
       - ./functions/city-data-function/src/test/resources/localstack/table-setup.sh:/etc/localstack/init/ready.d/table-setup.sh
     depends_on:

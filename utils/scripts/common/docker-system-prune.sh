@@ -12,15 +12,16 @@ if [[ "$prune_docker_system" =~ ^(y|yes)$ ]]; then
     docker system prune --all --force --volumes
     echo "DONE!"
 
-    ### REMOVING ALL LOCAL CACHED VOLUMES
+    echo ""
+    echo "REMOVING ALL LOCAL VOLUMES..."
+    echo ""
     actual_volumes=$(docker volume ls -q)
-    if [ -n "$actual_volumes" ]; then
-        echo ""
-        echo "REMOVING ALL LOCAL CACHED VOLUMES..."
-        echo ""
-        docker volume rm "$actual_volumes"
-        echo "DONE!"
-    fi
+    for volume in $actual_volumes
+    do
+        if [ -n "$volume" ]; then
+            docker volume rm "$volume"
+        fi
+    done
 else
-    echo ">> No problem at all. You can prune your Docker system later."
+    echo ">> No problem. You can prune your Docker system later."
 fi

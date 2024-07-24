@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class ModularityTest {
 
-    private final ApplicationModules applicationModules = ApplicationModules.of(CityDataApplication.class);
+    private final ApplicationModules applicationModules = ApplicationModules.of(FunctionalApplication.class);
 
 	@Test
 	void verifyModularityTest() {
