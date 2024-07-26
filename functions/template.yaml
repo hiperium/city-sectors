@@ -34,7 +34,7 @@ Resources:
     Properties:
       CodeUri: ./city-data-function
       FunctionName: "city-data-function"
-      Description: "City Data function used only for internal services."
+      Description: "City Data function used for internal services only."
       Handler: "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest"
       Policies:
         - DynamoDBReadPolicy:

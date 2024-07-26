@@ -113,11 +113,11 @@ You can find more information and examples about filtering Lambda function logs 
 ### Invoke Lambda function.
 To invoke the Lambda Function deployed in AWS, use the following command from the `functions` directory:
 ```bash
-aws lambda invoke                         \
-  --function-name "city-data-function"    \
+aws lambda invoke                           \
+  --function-name "city-data-function"      \
   --payload file://functions/city-data-function/src/test/resources/requests/lambda-valid-id-request.json \
-  --cli-binary-format raw-in-base64-out   \
-  --profile "city-dev"                    \
+  --cli-binary-format raw-in-base64-out     \
+  --profile "city-dev"                      \
   ~/Downloads/response.json
 ```
 

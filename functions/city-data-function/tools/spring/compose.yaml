@@ -1,9 +1,9 @@
-name: "scd"
+name: "spring-cd"
 services:
 
   localstack:
     image: "localstack/localstack:latest"
-    container_name: "scd-localstack"
+    container_name: "spring-cd-localstack"
     ports:
       - "4566:4566"
     env_file:
@@ -13,7 +13,7 @@ services:
       - ../../src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json
       - ../../src/test/resources/localstack/table-setup.sh:/etc/localstack/init/ready.d/table-setup.sh
     networks:
-      - "scd-network"
+      - "spring-cd-network"
 
 networks:
-  scd-network:
+  spring-cd-network:

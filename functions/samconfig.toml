@@ -8,7 +8,7 @@ version=0.1
 stack_name = "cities-sam-cli"
 
 [default.build.parameters]
-cached = false
+cached = true
 parallel = true
 use_container = true
 beta_features = false

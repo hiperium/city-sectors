@@ -115,7 +115,7 @@ menu() {
         helperMenu
         ;;
     1)
-        "$WORKING_DIR"/utils/scripts/1_deploy-docker-cluster.sh
+        "$WORKING_DIR"/utils/scripts/1_deploy-docker-compose.sh
         ;;
     2)
         printRemainingSessionTime

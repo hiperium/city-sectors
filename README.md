@@ -4,7 +4,7 @@
 * **Level**: 300 - Senior.
 * **Technologies**: GraalVM, Spring Boot, Spring Cloud, Spring Native, Spring Modulith, Docker, Testcontainers, LocalStack, Amazon DynamoDB, AWS Lambda, and AWS SAM.
 
-![](utils/images/solution_architecture_diagram.png)
+![](utils/img/solution_architecture_diagram.png)
 
 ---
 ### Description.
@@ -35,8 +35,8 @@ These config files can be provided to the native-image utility when building a n
 First, execute the following command from the `project's root` directory to start the application with the Tracing Agent:
     
 ```bash
-mvn clean process-classes                     \
-    -f functions/city-data-function/pom.xml   \
+mvn clean process-classes                    \
+    -f functions/city-data-function/pom.xml  \
     -P tracing-agent
 ```
 
