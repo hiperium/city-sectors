@@ -13,7 +13,7 @@
     <description>Returns City Data to internal services in the Hiperium City cloud.</description>
 
     <properties>
-        <start-class>hiperium.city.data.function.FunctionalApplication</start-class>
+        <start-class>hiperium.city.data.function.CityDataApplication</start-class>
     </properties>
 
     <dependencies>
