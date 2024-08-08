@@ -1,41 +1,92 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: 'AWS::Serverless-2016-10-31'
+Transform: AWS::Serverless-2016-10-31
 Description: 'SAM Template for Cities module.'
 
 Globals:
   Function:
-    Timeout: 20
-    MemorySize: 512
-    Runtime: "provided.al2023"
+    Timeout: 30     # seconds
+    MemorySize: 512 # MB
+    Runtime: provided.al2023
     Architectures:
-      - "arm64"
+      - arm64
 
 Parameters:
+  ResourceDeletionPolicy:
+    Type: String
+    Default: 'Delete'
+    AllowedValues:
+      - Retain
+      - Delete
+    Description: 'Deletion policy for table/log resources. For Snapshot, you need to create a manual backup before deleting the stack to preserve the data.'
+
   SpringProfile:
     Type: String
-    Default: "dev"
-    Description: "Spring profile for the functions."
+    Default: 'dev'
+    AllowedValues:
+      - dev
+      - qa
+      - prod
+    Description: 'Spring profile for the functions.'
+
+  LogRetentionInDays:
+    Type: Number
+    Default: 7
+    AllowedValues:
+      - 7
+      - 14
+      - 30
+    Description: 'Log retention in days for the functions.'
+
+  AnomalyDetectorEvaluationFrequency:
+    Type: String
+    Default: 'ONE_HOUR'
+    AllowedValues:
+      - FIVE_MIN
+      - TEN_MIN
+      - FIFTEEN_MIN
+      - THIRTY_MIN
+      - ONE_HOUR
+    Description: 'Anomaly detector evaluation frequency in minutes.'
 
 Resources:
   CitiesTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: "Cities"
+      TableName: 'Cities'
       AttributeDefinitions:
-        - AttributeName: "id"
-          AttributeType: "S"
+        - AttributeName: 'id'
+          AttributeType: S
       KeySchema:
-        - AttributeName: "id"
-          KeyType: "HASH"
-      BillingMode: "PAY_PER_REQUEST"
+        - AttributeName: 'id'
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 2
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: !Ref ResourceDeletionPolicy
+
+  CityDataFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}/CityDataFunction"
+      RetentionInDays: !Ref LogRetentionInDays
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: !Ref ResourceDeletionPolicy
 
   CityDataFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./city-data-function
-      FunctionName: "city-data-function"
-      Description: "City Data function used for internal services only."
-      Handler: "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest"
+      FunctionName: 'city-data-function'
+      Description: 'City Data function used for internal services only.'
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+      LoggingConfig:
+        LogGroup: !Ref CityDataFunctionLogGroup
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref CitiesTable
@@ -43,23 +94,21 @@ Resources:
         Variables:
           SPRING_PROFILES_ACTIVE: !Ref SpringProfile
     Metadata:
-      BuildMethod: "makefile"
+      BuildMethod: makefile
 
-  LogGroup:
-    Type: AWS::Logs::LogGroup
+  CityDataFunctionLogAnomalyDetector:
+    Type: AWS::Logs::LogAnomalyDetector
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${CityDataFunction}"
-      RetentionInDays: 7
+      LogGroupArnList:
+        - !GetAtt CityDataFunctionLogGroup.Arn
+      EvaluationFrequency: !Ref AnomalyDetectorEvaluationFrequency
+      AnomalyVisibilityTime: 21 # days
 
 Outputs:
-  CityDataFunctionArn:
-    Description: "City Data function ARN."
-    Value: !GetAtt CityDataFunction.Arn
-
   CitiesTableArn:
     Description: "Cities DynamoDB table ARN."
     Value: !GetAtt CitiesTable.Arn
 
-  CityDataFunctionIamRoleArn:
-    Description: "Implicit IAM Role ARN created for the City Data function."
-    Value: !GetAtt CityDataFunctionRole.Arn
+  CityDataFunctionArn:
+    Description: "City Data function ARN."
+    Value: !GetAtt CityDataFunction.Arn

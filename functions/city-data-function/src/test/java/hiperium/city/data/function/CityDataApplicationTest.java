@@ -2,8 +2,8 @@ package hiperium.city.data.function;
 
 import hiperium.city.data.function.common.TestContainersBase;
 import hiperium.city.data.function.configurations.FunctionsConfig;
-import hiperium.city.data.function.dto.CityIdRequest;
-import hiperium.city.data.function.dto.CityResponse;
+import hiperium.city.data.function.dto.CityDataRequest;
+import hiperium.city.data.function.dto.CityDataResponse;
 import hiperium.city.data.function.utils.TestsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,24 +43,24 @@ class CityDataApplicationTest extends TestContainersBase {
     @Test
     @DisplayName("Existing city")
     void givenExistingCity_whenInvokeLambdaFunction_thenReturnCityData() {
-        Function<Message<CityIdRequest>, CityResponse> function = this.getFunctionUnderTest();
-        Message<CityIdRequest> requestMessage = TestsUtils.createMessage(new CityIdRequest(ENABLED_CITY_ID));
-        CityResponse response = function.apply(requestMessage);
+        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
+        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(ENABLED_CITY_ID));
+        CityDataResponse response = function.apply(requestMessage);
 
         assertThat(response).isNotNull();
-        assertThat(response.id()).isEqualTo(ENABLED_CITY_ID);
+        assertThat(response.cityId()).isEqualTo(ENABLED_CITY_ID);
         assertThat(response.httpStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("Non-existing city")
     void givenNonExistingCity_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityIdRequest>, CityResponse> function = this.getFunctionUnderTest();
-        Message<CityIdRequest> requestMessage = TestsUtils.createMessage(new CityIdRequest(NON_EXISTING_CITY_ID));
-        CityResponse response = function.apply(requestMessage);
+        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
+        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(NON_EXISTING_CITY_ID));
+        CityDataResponse response = function.apply(requestMessage);
 
         assertThat(response).isNotNull();
-        assertThat(response.id()).isNull();
+        assertThat(response.cityId()).isNull();
         assertThat(response.httpStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.errorMessage()).isNotBlank();
     }
@@ -68,12 +68,12 @@ class CityDataApplicationTest extends TestContainersBase {
     @Test
     @DisplayName("Disabled city")
     void givenDisabledCity_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityIdRequest>, CityResponse> function = this.getFunctionUnderTest();
-        Message<CityIdRequest> requestMessage = TestsUtils.createMessage(new CityIdRequest(DISABLED_CITY_ID));
-        CityResponse response = function.apply(requestMessage);
+        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
+        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(DISABLED_CITY_ID));
+        CityDataResponse response = function.apply(requestMessage);
 
         assertThat(response).isNotNull();
-        assertThat(response.id()).isNull();
+        assertThat(response.cityId()).isNull();
         assertThat(response.httpStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.errorMessage()).isNotBlank();
     }
@@ -81,12 +81,12 @@ class CityDataApplicationTest extends TestContainersBase {
     @Test
     @DisplayName("Null parameter")
     void givenNullRequestParam_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityIdRequest>, CityResponse> function = this.getFunctionUnderTest();
-        Message<CityIdRequest> requestMessage = TestsUtils.createMessage(new CityIdRequest(null));
-        CityResponse response = function.apply(requestMessage);
+        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
+        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(null));
+        CityDataResponse response = function.apply(requestMessage);
 
         assertThat(response).isNotNull();
-        assertThat(response.id()).isNull();
+        assertThat(response.cityId()).isNull();
         assertThat(response.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.errorMessage()).isNotBlank();
     }
@@ -94,12 +94,12 @@ class CityDataApplicationTest extends TestContainersBase {
     @Test
     @DisplayName("Blank parameter")
     void givenBlankRequestParam_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityIdRequest>, CityResponse> function = this.getFunctionUnderTest();
-        Message<CityIdRequest> requestMessage = TestsUtils.createMessage(new CityIdRequest(StringUtils.SPACE));
-        CityResponse response = function.apply(requestMessage);
+        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
+        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(StringUtils.SPACE));
+        CityDataResponse response = function.apply(requestMessage);
 
         assertThat(response).isNotNull();
-        assertThat(response.id()).isNull();
+        assertThat(response.cityId()).isNull();
         assertThat(response.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.errorMessage()).isNotBlank();
     }
@@ -107,18 +107,18 @@ class CityDataApplicationTest extends TestContainersBase {
     @Test
     @DisplayName("Invalid UUID parameter")
     void givenInvalidUUID_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityIdRequest>, CityResponse> function = this.getFunctionUnderTest();
-        Message<CityIdRequest> requestMessage = TestsUtils.createMessage(new CityIdRequest("a0ecb466-7ef5-47bf"));
-        CityResponse response = function.apply(requestMessage);
+        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
+        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest("a0ecb466-7ef5-47bf"));
+        CityDataResponse response = function.apply(requestMessage);
 
         assertThat(response).isNotNull();
-        assertThat(response.id()).isNull();
+        assertThat(response.cityId()).isNull();
         assertThat(response.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.errorMessage()).isEqualTo("Invalid UUID");
     }
 
-    private Function<Message<CityIdRequest>, CityResponse> getFunctionUnderTest() {
-        Function<Message<CityIdRequest>, CityResponse> function = this.functionCatalog.lookup(Function.class,
+    private Function<Message<CityDataRequest>, CityDataResponse> getFunctionUnderTest() {
+        Function<Message<CityDataRequest>, CityDataResponse> function = this.functionCatalog.lookup(Function.class,
             FunctionsConfig.FIND_BY_ID_BEAN_NAME);
         assertThat(function).isNotNull();
         return function;

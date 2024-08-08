@@ -9,7 +9,7 @@ stack_name = "cities-sam-cli"
 
 [default.build.parameters]
 cached = true
-parallel = true
+parallel = false
 use_container = true
 beta_features = false
 build_image = ["hiperium/native-image-builder:latest"]

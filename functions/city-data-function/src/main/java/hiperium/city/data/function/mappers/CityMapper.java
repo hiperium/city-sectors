@@ -1,6 +1,6 @@
 package hiperium.city.data.function.mappers;
 
-import hiperium.city.data.function.dto.CityResponse;
+import hiperium.city.data.function.dto.CityDataResponse;
 import hiperium.city.data.function.entities.City;
 import hiperium.city.data.function.entities.CityStatus;
 import org.mapstruct.Mapper;
@@ -33,14 +33,15 @@ public interface CityMapper {
     City toCity(Map<String, AttributeValue> itemAttributesMap);
 
     /**
-     * Converts a City object, HTTP status code, and error message to a CityResponse object.
+     * Converts a City object, HTTP status code, and error message to a CityDataResponse object.
      *
      * @param city         The City object to convert.
      * @param httpStatus   The HTTP status code.
      * @param errorMessage The error message string.
-     * @return A CityResponse object with the converted data.
+     * @return A CityDataResponse object with the converted data.
      */
-    CityResponse toCityResponse(City city, int httpStatus, String errorMessage);
+    @Mapping(source = "city.id", target = "cityId")
+    CityDataResponse toCityResponse(City city, int httpStatus, String errorMessage);
 
     /**
      * Retrieves the string value associated with the given key from the attribute map.

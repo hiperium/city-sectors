@@ -18,10 +18,10 @@ RUN  mvn dependency:go-offline -B
 COPY src            src
 COPY tools/assembly tools/assembly
 
-RUN mvn -T 4C clean package -DskipTests -Ddependency-check.skip=true && \
-    mkdir -p target/extracted                                        && \
-    (cd target; unzip jar-assembly.zip -d extracted)                 && \
-    (cd target/dependencies; zip -r ../dependencies.zip .)
+RUN mvn -T 4C clean package -DskipTests -Ddependency-check.skip=true    && \
+    mkdir -p target/extracted                                           && \
+    (cd target; unzip jar-assembly.zip -d extracted)                    && \
+    (cd target/layer-dependencies; zip -r ../layer-dependencies.zip .)
 
 #####################################################################################
 ############################ Stage 2: Application Image #############################
@@ -29,9 +29,9 @@ RUN mvn -T 4C clean package -DskipTests -Ddependency-check.skip=true && \
 FROM public.ecr.aws/lambda/java:21-arm64
 ARG TARGET=/workspace/target
 
-COPY --from=builder ${TARGET}/*.jar            /var/tmp/data-function.jar
-COPY --from=builder ${TARGET}/dependencies.zip /var/tmp/data-function-libs.zip
-COPY --from=builder ${TARGET}/extracted        ${LAMBDA_TASK_ROOT}
+COPY --from=builder ${TARGET}/extracted                 ${LAMBDA_TASK_ROOT}
+COPY --from=builder ${TARGET}/*.jar                     /var/tmp/data-function.jar
+COPY --from=builder ${TARGET}/layer-dependencies.zip    /var/tmp/data-function-libs.zip
 
 EXPOSE 8080
 CMD [ "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest" ]

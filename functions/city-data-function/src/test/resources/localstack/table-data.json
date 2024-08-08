@@ -16,7 +16,7 @@
             "S": "ENABLED"
           },
           "timezone": {
-            "S": "-05:00"
+            "S": "America/Guayaquil"
           },
           "createdAt": {
             "S": "2024-05-08T15:00:00Z-05:00"
@@ -43,7 +43,7 @@
             "S": "DISABLED"
           },
           "timezone": {
-            "S": "-05:00"
+            "S": "America/Guayaquil"
           },
           "createdAt": {
             "S": "2024-05-08T15:00:00Z-05:00"

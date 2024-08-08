@@ -1,7 +1,6 @@
 package hiperium.city.data.function.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import hiperium.cities.commons.loggers.HiperiumLogger;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
@@ -10,7 +9,7 @@ import org.testcontainers.utility.MountableFile;
 
 public abstract class TestContainersBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestContainersBase.class);
+    private static final HiperiumLogger LOGGER = new HiperiumLogger(TestContainersBase.class);
 
     private static final LocalStackContainer LOCALSTACK_CONTAINER;
 

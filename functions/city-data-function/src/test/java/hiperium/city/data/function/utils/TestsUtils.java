@@ -1,6 +1,6 @@
 package hiperium.city.data.function.utils;
 
-import hiperium.city.data.function.dto.CityIdRequest;
+import hiperium.city.data.function.dto.CityDataRequest;
 import hiperium.city.data.function.entities.City;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
@@ -36,12 +36,12 @@ public final class TestsUtils {
             });
     }
 
-    public static Message<CityIdRequest> createMessage(CityIdRequest cityIdRequest) {
+    public static Message<CityDataRequest> createMessage(CityDataRequest cityDataRequest) {
         return new Message<>() {
             @NonNull
             @Override
-            public CityIdRequest getPayload() {
-                return cityIdRequest;
+            public CityDataRequest getPayload() {
+                return cityDataRequest;
             }
 
             @NonNull

@@ -3,44 +3,64 @@
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
 
-    <appender name="textAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>TRACE</level>
-        </filter>
-        <encoder>
-            <charset>UTF-8</charset>
-            <pattern>
-                %clr(%d{yyyy-MM-dd' 'HH:mm:ss.SSSXXX}){faint} %clr(%5p) %clr(-){faint} %clr(%-35.35logger{34}){cyan} %clr(:){faint} %m%n%wEx
-            </pattern>
-        </encoder>
-    </appender>
-
-    <appender name="jsonAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <charset>UTF-8</charset>
-            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-                <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSSXXX</timestampFormat>
-                <timestampFormatTimezoneId>-05:00</timestampFormatTimezoneId>
-                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+    <springProfile name="local | test">
+        <appender name="textAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>TRACE</level>
+            </filter>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>
+                    %clr(%d{yyyy-MM-dd'T'HH:mm:ss'Z'XXX}){faint} %clr(%5p) %clr(-){faint} %clr(%-35.35logger{34}){cyan} %clr(:){faint} %m%n%wEx
+                </pattern>
+            </encoder>
+        </appender>
+        <appender name="jsonAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="hiperium.cities.commons.loggers.HiperiumLoggerLayout">
+                    <includeMDC>false</includeMDC>
                     <prettyPrint>true</prettyPrint>
-                </jsonFormatter>
-                <includeMDC>false</includeMDC>
-                <includeThreadName>false</includeThreadName>
-                <includeContextName>false</includeContextName>
-                <appendLineSeparator>true</appendLineSeparator>
-            </layout>
-        </encoder>
-    </appender>
+                    <addLineSeparator>true</addLineSeparator>
+                    <includeThreadName>false</includeThreadName>
+                    <includeContextName>false</includeContextName>
+                </layout>
+            </encoder>
+        </appender>
+    </springProfile>
 
-    <!-- Log level priority: ERROR, WARN, INFO, DEBUG, and TRACE. -->
-    <!-- This can be overridden with the Spring config definitions. -->
-    <root level="WARN">
-        <appender-ref ref="textAppender"/>
-    </root>
+    <springProfile name="dev | qa">
+        <appender name="jsonAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="hiperium.cities.commons.loggers.HiperiumLoggerLayout">
+                    <includeMDC>true</includeMDC>
+                    <prettyPrint>false</prettyPrint>
+                    <addLineSeparator>true</addLineSeparator>
+                    <timeZoneId>America/Guayaquil</timeZoneId>
+                    <includeThreadName>true</includeThreadName>
+                    <includeContextName>true</includeContextName>
+                </layout>
+            </encoder>
+        </appender>
+    </springProfile>
 
-    <springProfile name="local | dev | test">
+    <springProfile name="local | test">
+        <root level="info">
+            <appender-ref ref="textAppender"/>
+        </root>
         <logger name="hiperium.city.data.function" level="DEBUG" additivity="false">
             <appender-ref ref="jsonAppender"/>
+        </logger>
+        <logger name="io.awspring.cloud" level="DEBUG" additivity="false">
+            <appender-ref ref="textAppender"/>
+        </logger>
+        <logger name="org.springframework.cloud.function.adapter.aws" level="DEBUG" additivity="false">
+            <appender-ref ref="textAppender"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="local">
+        <logger name="org.springframework.boot.docker.compose" level="DEBUG" additivity="false">
+            <appender-ref ref="textAppender"/>
         </logger>
     </springProfile>
 
@@ -49,5 +69,13 @@
             <appender-ref ref="textAppender"/>
         </logger>
     </springProfile>
-</configuration>
 
+    <springProfile name="dev | qa">
+        <root level="info">
+            <appender-ref ref="jsonAppender"/>
+        </root>
+        <logger name="hiperium.city.data.function" level="DEBUG" additivity="false">
+            <appender-ref ref="jsonAppender"/>
+        </logger>
+    </springProfile>
+</configuration>

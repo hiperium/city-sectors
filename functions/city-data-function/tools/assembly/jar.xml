@@ -11,9 +11,6 @@
             <directory>target/classes</directory>
             <outputDirectory>/</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
-            <excludes>
-                <exclude>**/LambdaInvokerUtil.class</exclude>
-            </excludes>
         </fileSet>
     </fileSets>
     <dependencySets>

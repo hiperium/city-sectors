@@ -20,5 +20,17 @@ sam delete        \
   --no-prompts    \
   --profile "$AWS_WORKLOADS_PROFILE"
 
+echo ""
+echo "DELETING EXISTING LOG-GROUPS FROM CLOUDWATCH..."
+aws logs describe-log-groups --output text \
+    --query "logGroups[?contains(logGroupName, 'cities-sam-cli')].[logGroupName]" \
+    --profile "$AWS_WORKLOADS_PROFILE" | while read -r log_group_name; do
+        echo "- Deleting log-group: $log_group_name"
+        aws logs delete-log-group                 \
+            --log-group-name "$log_group_name"    \
+            --profile "$AWS_WORKLOADS_PROFILE"
+done
+echo "DONE!"
+
 ### REMOVE SAM CONFIGURATION FILES
 rm -rf "$WORKING_DIR"/functions/.aws-sam

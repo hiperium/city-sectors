@@ -1,11 +1,10 @@
 package hiperium.city.data.function.configurations;
 
-import hiperium.city.data.function.dto.CityIdRequest;
-import hiperium.city.data.function.dto.CityResponse;
+import hiperium.cities.commons.loggers.HiperiumLogger;
+import hiperium.city.data.function.dto.CityDataRequest;
+import hiperium.city.data.function.dto.CityDataResponse;
 import hiperium.city.data.function.functions.CityDataFunction;
 import hiperium.city.data.function.mappers.CityMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -21,7 +20,7 @@ public class FunctionsConfig {
 
     public static final String FIND_BY_ID_BEAN_NAME = "findByIdFunction";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionsConfig.class);
+    private static final HiperiumLogger LOGGER = new HiperiumLogger(FunctionsConfig.class);
 
     private final CityMapper cityMapper;
     private final DynamoDbClient dynamoDbClient;
@@ -37,8 +36,8 @@ public class FunctionsConfig {
      * @return The function that finds a city by its identifier.
      */
     @Bean(FIND_BY_ID_BEAN_NAME)
-    public Function<Message<CityIdRequest>, CityResponse> findByIdFunction() {
-        LOGGER.debug("Configuring CityData Function...");
+    public Function<Message<CityDataRequest>, CityDataResponse> findByIdFunction() {
+        LOGGER.info("Configuring CityData Function.");
         return new CityDataFunction(this.cityMapper, this.dynamoDbClient);
     }
 }

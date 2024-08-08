@@ -5,9 +5,9 @@ echo "CREATING DYNAMODB TABLE..."
 awslocal dynamodb create-table                \
   --table-name 'Cities'                       \
   --attribute-definitions                     \
-    AttributeName=id,AttributeType=S          \
+    AttributeName='id',AttributeType=S        \
   --key-schema                                \
-    AttributeName=id,KeyType=HASH             \
+    AttributeName='id',KeyType=HASH           \
   --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 
 echo ""
