@@ -55,17 +55,6 @@ curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" \
   -d @functions/city-data-function/src/test/resources/requests/valid/lambda-valid-id-request.json
 ```
 
-### Invoking Lambda functions inside LocalStack.
-The following command will invoke the Lambda Function using AWS CLI from the `project's root` directory:
-```bash
-aws lambda invoke                               \
-  --function-name "city-data-function"          \
-  --payload file://functions/city-data-function/src/test/resources/requests/valid/lambda-valid-id-request.json  \
-  --cli-binary-format raw-in-base64-out         \
-  --endpoint-url=http://localhost:4566          \
-  ~/Downloads/response.json
-```
-
 ### Getting records from DynamoDB.
 Execute the following command to get the created records in DynamoDB:
 ```bash
