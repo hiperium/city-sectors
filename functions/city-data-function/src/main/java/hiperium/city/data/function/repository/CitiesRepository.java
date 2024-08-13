@@ -1,9 +1,9 @@
 package hiperium.city.data.function.repository;
 
+import hiperium.cities.commons.exceptions.ResourceNotFoundException;
 import hiperium.cities.commons.loggers.HiperiumLogger;
 import hiperium.city.data.function.dto.CityDataRequest;
 import hiperium.city.data.function.entities.City;
-import hiperium.city.data.function.exceptions.ResourceNotFoundException;
 import hiperium.city.data.function.mappers.CityMapper;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -46,26 +46,26 @@ public class CitiesRepository {
      * @throws ResourceNotFoundException if a city with the specified identifier is not found.
      * @throws RuntimeException if there is an error finding the city in the database.
      */
-    public City findCityById(CityDataRequest cityDataRequest) {
+    public City findById(CityDataRequest cityDataRequest) {
         LOGGER.debug("Find City by ID", cityDataRequest);
 
         HashMap<String, AttributeValue> keyToGet = new HashMap<>();
         keyToGet.put(City.ID_COLUMN_NAME, AttributeValue.builder().s(cityDataRequest.cityId()).build());
-        GetItemRequest request = GetItemRequest.builder()
+        GetItemRequest itemRequest = GetItemRequest.builder()
             .key(keyToGet)
             .tableName(City.TABLE_NAME)
             .build();
 
         City city;
         try {
-            Map<String, AttributeValue> returnedItem = this.dynamoDbClient.getItem(request).item();
+            Map<String, AttributeValue> returnedItem = this.dynamoDbClient.getItem(itemRequest).item();
             if (Objects.isNull(returnedItem) || returnedItem.isEmpty()) {
                 throw new ResourceNotFoundException("City not found with ID: " + cityDataRequest.cityId());
             }
-            city = this.cityMapper.toCity(returnedItem);
+            city = this.cityMapper.mapToCity(returnedItem);
         } catch (DynamoDbException exception) {
             LOGGER.error("When trying to find a City with ID: " + cityDataRequest.cityId(), exception.getMessage());
-            throw new RuntimeException("Error finding city with ID: " + cityDataRequest.cityId(), exception);
+            throw new RuntimeException("Error finding City with ID: " + cityDataRequest.cityId(), exception);
         }
         return city;
     }

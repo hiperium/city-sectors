@@ -30,7 +30,7 @@ public interface CityMapper {
     @Mapping(target = "status",   expression = "java(getStatusEnumFromAttributesMap(itemAttributesMap))")
     @Mapping(target = "country",  expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.COUNTRY_COLUMN_NAME))")
     @Mapping(target = "timezone", expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.TIMEZONE_COLUMN_NAME))")
-    City toCity(Map<String, AttributeValue> itemAttributesMap);
+    City mapToCity(Map<String, AttributeValue> itemAttributesMap);
 
     /**
      * Converts a City object, HTTP status code, and error message to a CityDataResponse object.
@@ -41,7 +41,7 @@ public interface CityMapper {
      * @return A CityDataResponse object with the converted data.
      */
     @Mapping(source = "city.id", target = "cityId")
-    CityDataResponse toCityResponse(City city, int httpStatus, String errorMessage);
+    CityDataResponse mapToCityResponse(City city, int httpStatus, String errorMessage);
 
     /**
      * Retrieves the string value associated with the given key from the attribute map.

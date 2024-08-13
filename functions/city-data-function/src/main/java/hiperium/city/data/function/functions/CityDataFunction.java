@@ -1,13 +1,13 @@
 package hiperium.city.data.function.functions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hiperium.cities.commons.exceptions.DisabledCityException;
+import hiperium.cities.commons.exceptions.ResourceNotFoundException;
 import hiperium.cities.commons.loggers.HiperiumLogger;
 import hiperium.city.data.function.dto.CityDataRequest;
 import hiperium.city.data.function.dto.CityDataResponse;
 import hiperium.city.data.function.entities.City;
 import hiperium.city.data.function.entities.CityStatus;
-import hiperium.city.data.function.exceptions.DisabledCityException;
-import hiperium.city.data.function.exceptions.ResourceNotFoundException;
 import hiperium.city.data.function.mappers.CityMapper;
 import hiperium.city.data.function.repository.CitiesRepository;
 import hiperium.city.data.function.validations.BeanValidations;
@@ -39,10 +39,10 @@ public class CityDataFunction implements Function<Message<byte[]>, Mono<CityData
     }
 
     /**
-     * Find a city by its identifier.
+     * Applies the CityDataFunction to a given city ID request message and returns the CityDataResponse.
      *
-     * @param cityIdRequestMessage The request message containing the city ID.
-     * @return A Mono containing the CityDataResponse object.
+     * @param cityIdRequestMessage The city ID request message to be processed.
+     * @return A Mono containing the CityDataResponse.
      */
     @Override
     public Mono<CityDataResponse> apply(Message<byte[]> cityIdRequestMessage) {
@@ -58,9 +58,9 @@ public class CityDataFunction implements Function<Message<byte[]>, Mono<CityData
         }
         return Mono.just(cityDataRequest)
             .doOnNext(BeanValidations::validateBean)
-            .map(this.citiesRepository::findCityById)
+            .map(this.citiesRepository::findById)
             .doOnNext(this::validateCityStatus)
-            .map(city -> this.cityMapper.toCityResponse(city, HttpStatus.OK.value(), null))
+            .map(city -> this.cityMapper.mapToCityResponse(city, HttpStatus.OK.value(), null))
             .onErrorResume(CityDataFunction::handleException);
     }
 
@@ -72,7 +72,7 @@ public class CityDataFunction implements Function<Message<byte[]>, Mono<CityData
     }
 
     private static Mono<CityDataResponse> handleException(Throwable throwable) {
-        LOGGER.error("Couldn't find city data", throwable.getMessage());
+        LOGGER.error("Couldn't find City data", throwable.getMessage());
         CityDataResponse deviceUpdateResponse = createDeviceUpdateResponse(throwable);
         return Mono.just(deviceUpdateResponse);
     }

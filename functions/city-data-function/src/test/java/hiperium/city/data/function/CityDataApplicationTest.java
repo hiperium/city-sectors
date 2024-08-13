@@ -45,12 +45,12 @@ class CityDataApplicationTest extends TestContainersBase {
         "requests/valid/lambda-valid-id-request.json"
     })
     void givenValidRequest_whenInvokeLambdaFunction_thenExecuteSuccessfully(String jsonFilePath) throws IOException {
-        Function<Message<byte[]>, Mono<CityDataResponse>> createEventFunction = this.getFunctionUnderTest();
+        Function<Message<byte[]>, Mono<CityDataResponse>> function = this.getFunctionUnderTest();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath)) {
             assert inputStream != null;
             Message<byte[]> requestMessage = TestsUtils.createMessage(inputStream.readAllBytes());
 
-            StepVerifier.create(createEventFunction.apply(requestMessage))
+            StepVerifier.create(function.apply(requestMessage))
                 .assertNext(response -> {
                     assertThat(response).isNotNull();
                     // The status code should be a success code.
