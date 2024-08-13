@@ -1,94 +1,95 @@
 package hiperium.city.data.function.functions;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hiperium.cities.commons.loggers.HiperiumLogger;
 import hiperium.city.data.function.dto.CityDataRequest;
 import hiperium.city.data.function.dto.CityDataResponse;
 import hiperium.city.data.function.entities.City;
 import hiperium.city.data.function.entities.CityStatus;
+import hiperium.city.data.function.exceptions.DisabledCityException;
+import hiperium.city.data.function.exceptions.ResourceNotFoundException;
 import hiperium.city.data.function.mappers.CityMapper;
+import hiperium.city.data.function.repository.CitiesRepository;
 import hiperium.city.data.function.validations.BeanValidations;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
 import java.util.function.Function;
 
 /**
  * Represents a function that finds a city by its identifier.
- *
- * @apiNote The Enhanced Client has problems at runtime when used with Spring Native.
- * This is because the Enhanced Client uses reflection to create the DynamoDbClient.
- * The solution is to use the low-level client instead.
  */
-public class CityDataFunction implements Function<Message<CityDataRequest>, CityDataResponse> {
+public class CityDataFunction implements Function<Message<byte[]>, Mono<CityDataResponse>> {
 
     private static final HiperiumLogger LOGGER = new HiperiumLogger(CityDataFunction.class);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final CityMapper cityMapper;
-    private final DynamoDbClient dynamoDbClient;
+    private final CitiesRepository citiesRepository;
 
-    public CityDataFunction(CityMapper cityMapper, DynamoDbClient dynamoDbClient) {
+    /**
+     * Represents a function that finds a city by its identifier.
+     */
+    public CityDataFunction(CityMapper cityMapper, CitiesRepository citiesRepository) {
         this.cityMapper = cityMapper;
-        this.dynamoDbClient = dynamoDbClient;
+        this.citiesRepository = citiesRepository;
     }
 
     /**
-     * Finds a city by its identifier.
+     * Find a city by its identifier.
      *
-     * @return The city with the matching identifier, or null if not found.
+     * @param cityIdRequestMessage The request message containing the city ID.
+     * @return A Mono containing the CityDataResponse object.
      */
     @Override
-    public CityDataResponse apply(Message<CityDataRequest> cityIdRequestMessage) {
-        LOGGER.debug("Finding City by ID", cityIdRequestMessage.getPayload());
-        CityDataRequest cityDataRequest = cityIdRequestMessage.getPayload();
+    public Mono<CityDataResponse> apply(Message<byte[]> cityIdRequestMessage) {
+        CityDataRequest cityDataRequest;
         try {
-            BeanValidations.validateBean(cityDataRequest);
-        } catch (ValidationException exception) {
-            LOGGER.error("Invalid City ID request", exception.getMessage());
-            return new CityDataResponse.Builder()
+            cityDataRequest = OBJECT_MAPPER.readValue(cityIdRequestMessage.getPayload(), CityDataRequest.class);
+        } catch (IOException exception) {
+            LOGGER.error("Couldn't deserialize payload request", exception.getMessage());
+            return Mono.just(new CityDataResponse.Builder()
                 .httpStatus(HttpStatus.BAD_REQUEST.value())
-                .errorMessage(exception.getMessage())
-                .build();
+                .errorMessage("Invalid request payload")
+                .build());
         }
+        return Mono.just(cityDataRequest)
+            .doOnNext(BeanValidations::validateBean)
+            .map(this.citiesRepository::findCityById)
+            .doOnNext(this::validateCityStatus)
+            .map(city -> this.cityMapper.toCityResponse(city, HttpStatus.OK.value(), null))
+            .onErrorResume(CityDataFunction::handleException);
+    }
 
-        HashMap<String, AttributeValue> keyToGet = new HashMap<>();
-        keyToGet.put(City.ID_COLUMN_NAME, AttributeValue.builder().s(cityDataRequest.cityId()).build());
-        GetItemRequest request = GetItemRequest.builder()
-            .key(keyToGet)
-            .tableName(City.TABLE_NAME)
+    private void validateCityStatus(City city) {
+        LOGGER.debug("Validating City Status", city);
+        if (city.status().equals(CityStatus.DISABLED)) {
+            throw new DisabledCityException("City is disabled: " + city.id());
+        }
+    }
+
+    private static Mono<CityDataResponse> handleException(Throwable throwable) {
+        LOGGER.error("Couldn't find city data", throwable.getMessage());
+        CityDataResponse deviceUpdateResponse = createDeviceUpdateResponse(throwable);
+        return Mono.just(deviceUpdateResponse);
+    }
+
+    private static CityDataResponse createDeviceUpdateResponse(Throwable throwable) {
+        int statusCode;
+        String message = throwable.getMessage();
+
+        switch (throwable) {
+            case ValidationException ignored -> statusCode = HttpStatus.BAD_REQUEST.value();
+            case ResourceNotFoundException ignored -> statusCode = HttpStatus.NOT_FOUND.value();
+            case DisabledCityException ignored -> statusCode = HttpStatus.NOT_ACCEPTABLE.value();
+            default -> statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+        }
+        return new CityDataResponse.Builder()
+            .httpStatus(statusCode)
+            .errorMessage(message)
             .build();
-
-        CityDataResponse response;
-        try {
-            Map<String, AttributeValue> returnedItem = this.dynamoDbClient.getItem(request).item();
-            if (Objects.isNull(returnedItem) || returnedItem.isEmpty()) {
-                response = new CityDataResponse.Builder()
-                    .httpStatus(HttpStatus.NOT_FOUND.value())
-                    .errorMessage("City not found.")
-                    .build();
-            } else {
-                City city = this.cityMapper.toCity(returnedItem);
-                if (city.status().equals(CityStatus.DISABLED)) {
-                    response = new CityDataResponse.Builder()
-                        .httpStatus(HttpStatus.NOT_ACCEPTABLE.value())
-                        .errorMessage("City is disabled.")
-                        .build();
-                } else {
-                    response = this.cityMapper.toCityResponse(city, HttpStatus.OK.value(), null);
-                }
-            }
-        } catch (DynamoDbException exception) {
-            LOGGER.error("When trying to find a City with ID: " + cityDataRequest.cityId(), exception.getMessage());
-            response = new CityDataResponse(null, null, null, HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal server error when trying to find City data.");
-        }
-        return response;
     }
 }

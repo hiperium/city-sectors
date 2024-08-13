@@ -21,6 +21,12 @@ public record CityDataResponse(
         private Integer httpStatus;
         private String errorMessage;
 
+        /**
+         * Sets the city ID for the CityDataResponse Builder.
+         *
+         * @param id The ID of the city to set.
+         * @return The CityDataResponse Builder object.
+         */
         public Builder cityId(String id) {
             this.cityId = id;
             return this;

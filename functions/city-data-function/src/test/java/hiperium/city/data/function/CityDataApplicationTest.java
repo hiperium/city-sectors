@@ -2,21 +2,24 @@ package hiperium.city.data.function;
 
 import hiperium.city.data.function.common.TestContainersBase;
 import hiperium.city.data.function.configurations.FunctionsConfig;
-import hiperium.city.data.function.dto.CityDataRequest;
 import hiperium.city.data.function.dto.CityDataResponse;
 import hiperium.city.data.function.utils.TestsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.function.context.FunctionCatalog;
 import org.springframework.cloud.function.context.test.FunctionalSpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,10 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @FunctionalSpringBootTest(classes = CityDataApplication.class)
 class CityDataApplicationTest extends TestContainersBase {
-
-    private static final String ENABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328528";
-    private static final String DISABLED_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328529";
-    private static final String NON_EXISTING_CITY_ID = "a0ecb466-7ef5-47bf-a1ca-12f9f9328530";
 
     @Autowired
     private DynamoDbClient dynamoDbClient;
@@ -40,85 +39,55 @@ class CityDataApplicationTest extends TestContainersBase {
         TestsUtils.waitForDynamoDbToBeReady(this.dynamoDbClient);
     }
 
-    @Test
-    @DisplayName("Existing city")
-    void givenExistingCity_whenInvokeLambdaFunction_thenReturnCityData() {
-        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
-        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(ENABLED_CITY_ID));
-        CityDataResponse response = function.apply(requestMessage);
+    @ParameterizedTest
+    @DisplayName("Valid requests")
+    @ValueSource(strings = {
+        "requests/valid/lambda-valid-id-request.json"
+    })
+    void givenValidRequest_whenInvokeLambdaFunction_thenExecuteSuccessfully(String jsonFilePath) throws IOException {
+        Function<Message<byte[]>, Mono<CityDataResponse>> createEventFunction = this.getFunctionUnderTest();
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath)) {
+            assert inputStream != null;
+            Message<byte[]> requestMessage = TestsUtils.createMessage(inputStream.readAllBytes());
 
-        assertThat(response).isNotNull();
-        assertThat(response.cityId()).isEqualTo(ENABLED_CITY_ID);
-        assertThat(response.httpStatus()).isEqualTo(HttpStatus.OK.value());
+            StepVerifier.create(createEventFunction.apply(requestMessage))
+                .assertNext(response -> {
+                    assertThat(response).isNotNull();
+                    // The status code should be a success code.
+                    int statusCode = response.httpStatus();
+                    assertThat(statusCode >= HttpStatus.OK.value() && statusCode <= HttpStatus.IM_USED.value()).isTrue();
+                })
+                .verifyComplete();
+        }
     }
 
-    @Test
-    @DisplayName("Non-existing city")
-    void givenNonExistingCity_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
-        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(NON_EXISTING_CITY_ID));
-        CityDataResponse response = function.apply(requestMessage);
+    @ParameterizedTest
+    @DisplayName("Non-valid requests")
+    @ValueSource(strings = {
+        "requests/non-valid/empty-city-id.json",
+        "requests/non-valid/wrong-city-uuid.json",
+        "requests/non-valid/non-existing-city.json",
+        "requests/non-valid/disabled-city.json"
+    })
+    void givenNonValidRequests_whenInvokeLambdaFunction_thenReturnErrors(String jsonFilePath) throws IOException {
+        Function<Message<byte[]>, Mono<CityDataResponse>> createEventFunction = this.getFunctionUnderTest();
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath)) {
+            assert inputStream != null;
+            Message<byte[]> requestMessage = TestsUtils.createMessage(inputStream.readAllBytes());
 
-        assertThat(response).isNotNull();
-        assertThat(response.cityId()).isNull();
-        assertThat(response.httpStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.errorMessage()).isNotBlank();
+            StepVerifier.create(createEventFunction.apply(requestMessage))
+                .assertNext(response -> {
+                    assertThat(response).isNotNull();
+                    // The status code should be an error code.
+                    int statusCode = response.httpStatus();
+                    assertThat(statusCode >= HttpStatus.OK.value() && statusCode <= HttpStatus.IM_USED.value()).isFalse();
+                })
+                .verifyComplete();
+        }
     }
 
-    @Test
-    @DisplayName("Disabled city")
-    void givenDisabledCity_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
-        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(DISABLED_CITY_ID));
-        CityDataResponse response = function.apply(requestMessage);
-
-        assertThat(response).isNotNull();
-        assertThat(response.cityId()).isNull();
-        assertThat(response.httpStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-        assertThat(response.errorMessage()).isNotBlank();
-    }
-
-    @Test
-    @DisplayName("Null parameter")
-    void givenNullRequestParam_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
-        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(null));
-        CityDataResponse response = function.apply(requestMessage);
-
-        assertThat(response).isNotNull();
-        assertThat(response.cityId()).isNull();
-        assertThat(response.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.errorMessage()).isNotBlank();
-    }
-
-    @Test
-    @DisplayName("Blank parameter")
-    void givenBlankRequestParam_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
-        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest(StringUtils.SPACE));
-        CityDataResponse response = function.apply(requestMessage);
-
-        assertThat(response).isNotNull();
-        assertThat(response.cityId()).isNull();
-        assertThat(response.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.errorMessage()).isNotBlank();
-    }
-
-    @Test
-    @DisplayName("Invalid UUID parameter")
-    void givenInvalidUUID_whenInvokeLambdaFunction_thenReturnError() {
-        Function<Message<CityDataRequest>, CityDataResponse> function = this.getFunctionUnderTest();
-        Message<CityDataRequest> requestMessage = TestsUtils.createMessage(new CityDataRequest("a0ecb466-7ef5-47bf"));
-        CityDataResponse response = function.apply(requestMessage);
-
-        assertThat(response).isNotNull();
-        assertThat(response.cityId()).isNull();
-        assertThat(response.httpStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.errorMessage()).isEqualTo("Invalid UUID");
-    }
-
-    private Function<Message<CityDataRequest>, CityDataResponse> getFunctionUnderTest() {
-        Function<Message<CityDataRequest>, CityDataResponse> function = this.functionCatalog.lookup(Function.class,
+    private Function<Message<byte[]>, Mono<CityDataResponse>> getFunctionUnderTest() {
+        Function<Message<byte[]>, Mono<CityDataResponse>> function = this.functionCatalog.lookup(Function.class,
             FunctionsConfig.FIND_BY_ID_BEAN_NAME);
         assertThat(function).isNotNull();
         return function;

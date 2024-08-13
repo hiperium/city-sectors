@@ -1,7 +1,8 @@
 package hiperium.city.data.function.utils;
 
-import hiperium.city.data.function.dto.CityDataRequest;
 import hiperium.city.data.function.entities.City;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
@@ -14,10 +15,8 @@ import software.amazon.awssdk.services.dynamodb.model.TableStatus;
 import java.time.Duration;
 import java.util.Map;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestsUtils {
-
-    private TestsUtils() {
-    }
 
     public static void waitForDynamoDbToBeReady(final DynamoDbClient dynamoDbClient) {
         Awaitility.await()
@@ -36,12 +35,12 @@ public final class TestsUtils {
             });
     }
 
-    public static Message<CityDataRequest> createMessage(CityDataRequest cityDataRequest) {
+    public static Message<byte[]> createMessage(byte[] bytes) {
         return new Message<>() {
             @NonNull
             @Override
-            public CityDataRequest getPayload() {
-                return cityDataRequest;
+            public byte[] getPayload() {
+                return bytes;
             }
 
             @NonNull
