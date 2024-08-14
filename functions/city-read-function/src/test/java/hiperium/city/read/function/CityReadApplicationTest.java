@@ -25,8 +25,8 @@ import java.util.function.Function;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
-@FunctionalSpringBootTest(classes = ReadCityApplication.class)
-class ReadCityApplicationTest extends TestContainersBase {
+@FunctionalSpringBootTest(classes = CityReadApplication.class)
+class CityReadApplicationTest extends TestContainersBase {
 
     @Autowired
     private DynamoDbClient dynamoDbClient;

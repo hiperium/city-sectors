@@ -68,7 +68,7 @@ awslocal iam put-role-policy                \
 echo ""
 echo "CREATING CITY DATA FUNCTION..."
 awslocal lambda create-function                                                               \
-  --function-name 'read-city-function'                                                        \
+  --function-name 'city-read-function'                                                        \
   --runtime 'provided.al2023'                                                                 \
   --architectures 'arm64'                                                                     \
   --zip-file fileb://"$DATA_FUNCTION_PATH"                                                    \

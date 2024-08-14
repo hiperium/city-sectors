@@ -76,7 +76,7 @@ awslocal iam put-role-policy                \
 echo ""
 echo "CREATING CITY DATA LAMBDA LAYER..."
 awslocal lambda publish-layer-version           \
-  --layer-name 'read-city-function-layer'       \
+  --layer-name 'city-read-function-layer'       \
   --description "City Data dependencies"        \
   --zip-file fileb://$DATA_DEPENDENCIES_PATH    \
   --compatible-runtimes 'java21'                \
@@ -85,12 +85,12 @@ awslocal lambda publish-layer-version           \
 echo ""
 echo "CREATING CITY DATA FUNCTION..."
 awslocal lambda create-function                                                               \
-  --function-name 'read-city-function'                                                        \
+  --function-name 'city-read-function'                                                        \
   --runtime 'java21'                                                                          \
   --architectures 'arm64'                                                                     \
   --zip-file fileb://"$DATA_FUNCTION_PATH"                                                    \
   --handler 'org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest'   \
-  --layers 'arn:aws:lambda:us-east-1:000000000000:layer:read-city-function-layer:1'           \
+  --layers 'arn:aws:lambda:us-east-1:000000000000:layer:city-read-function-layer:1'           \
   --timeout 20                                                                                \
   --memory-size 512                                                                           \
   --role 'arn:aws:iam::000000000000:role/lambda-role'                                         \

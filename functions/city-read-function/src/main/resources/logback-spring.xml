@@ -30,7 +30,8 @@
             <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
                 <layout class="hiperium.cities.commons.loggers.HiperiumLoggerLayout">
                     <prettyPrint>false</prettyPrint>
-                    <numericTimestamps>true</numericTimestamps>
+                    <timeZoneId>America/Guayaquil</timeZoneId>
+                    <numericTimestamps>false</numericTimestamps>
                 </layout>
             </encoder>
         </appender>

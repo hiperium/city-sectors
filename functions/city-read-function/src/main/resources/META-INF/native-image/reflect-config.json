@@ -348,7 +348,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setNumericTimestamps","parameterTypes":["boolean"] }, {"name":"setPrettyPrint","parameterTypes":["boolean"] }]
 },
 {
-  "name":"hiperium.city.read.function.ReadCityApplication",
+  "name":"hiperium.city.read.function.CityReadApplication",
   "allDeclaredFields":true,
   "allDeclaredClasses":true,
   "queryAllDeclaredMethods":true,
@@ -356,7 +356,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }]
 },
 {
-  "name":"hiperium.city.read.function.ReadCityApplication$$SpringCGLIB$$0",
+  "name":"hiperium.city.read.function.CityReadApplication$$SpringCGLIB$$0",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,

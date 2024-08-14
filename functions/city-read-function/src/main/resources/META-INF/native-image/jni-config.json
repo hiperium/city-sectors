@@ -1,6 +1,6 @@
 [
 {
-  "name":"hiperium.city.read.function.ReadCityApplication",
+  "name":"hiperium.city.read.function.CityReadApplication",
   "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
 },
 {

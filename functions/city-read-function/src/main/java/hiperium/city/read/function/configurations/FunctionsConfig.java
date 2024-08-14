@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Configuration(proxyBeanMethods = false)
 public class FunctionsConfig {
 
-    public static final String FIND_BY_ID_BEAN_NAME = "findByIdFunction";
+    public static final String FIND_BY_ID_BEAN_NAME = "findById";
 
     private static final HiperiumLogger LOGGER = new HiperiumLogger(FunctionsConfig.class);
 

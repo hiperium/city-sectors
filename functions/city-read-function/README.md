@@ -1,4 +1,4 @@
-## Hiperium City Data Function.
+## Hiperium City Read Function.
 
 This project contains source code using Spring Cloud Function to retrieve cities' data from a DynamoDB table.
 It includes the following files and folders.

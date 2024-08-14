@@ -9,13 +9,13 @@
         <relativePath/>
     </parent>
 
-    <artifactId>read-city-function</artifactId>
+    <artifactId>city-read-function</artifactId>
     <version>1.0.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Provides City data to services inside the Hiperium City project.</description>
 
     <properties>
-        <start-class>hiperium.city.read.function.ReadCityApplication</start-class>
+        <start-class>hiperium.city.read.function.CityReadApplication</start-class>
     </properties>
 
     <dependencies>
