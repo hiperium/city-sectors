@@ -24,8 +24,6 @@ The project is divided into the following files/directories:
 
 - **functions**: Directory used Lambda functions.
 - **utils**: Directory used for script files and other project documentation.
-- **common**: Directory used for common project files.
-
 
 ---
 ### GraalVM Tracing Agent.
@@ -36,25 +34,25 @@ First, execute the following command from the `project's root` directory to star
     
 ```bash
 mvn clean process-classes                    \
-    -f functions/city-data-function/pom.xml  \
+    -f functions/read-city-function/pom.xml  \
     -P tracing-agent
 ```
 
 In another terminal window, invoke the Lambda Function from the `project's` root directory:
 ```bash
 curl -H "Content-Type: application/json" "http://localhost:8080/findByIdFunction" \
-  -d @functions/city-data-function/src/test/resources/requests/valid/lambda-valid-id-request.json
+  -d @functions/read-city-function/src/test/resources/requests/valid/lambda-valid-id-request.json
   
 curl -H "Content-Type: application/json" "http://localhost:8080/findByIdFunction" \
-  -d @functions/city-data-function/src/test/resources/requests/non-valid/wrong-city-uuid.json
+  -d @functions/read-city-function/src/test/resources/requests/non-valid/wrong-city-uuid.json
 ```
 
 At this point, the Tracing Agent will generate the necessary configuration files for the native-image utility.
 You can exit the application after the request is completed by pressing `Ctrl+C`.
 Finally, copy the output files into the `META-INF/native-image` directory to be included by the native-image utility:
 ```bash
-cp -rf functions/city-data-function/target/native-image/* \
-       functions/city-data-function/src/main/resources/META-INF/native-image
+cp -rf functions/read-city-function/target/native-image/* \
+       functions/read-city-function/src/main/resources/META-INF/native-image
 ```
 
 After this, you can build the native image using as usual and make tests with the AWS Lambda Function.

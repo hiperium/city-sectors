@@ -1,11 +1,11 @@
 name: "hiperium-cities"
 services:
   
-  city-data-function:
-    image: "hiperium/city-data-function:1.0.0"
-    container_name: "city-data-function"
+  read-city-function:
+    image: "hiperium/read-city-function:1.0.0"
+    container_name: "read-city-function"
     build:
-      context: functions/city-data-function
+      context: functions/read-city-function
       dockerfile: tools/docker/Dockerfile-native
     ports:
       - "9000:8080"
@@ -26,13 +26,13 @@ services:
     volumes:
       - cities-volume:/var/tmp/city-data
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./functions/city-data-function/src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json
-      - ./functions/city-data-function/src/test/resources/localstack/table-setup.sh:/etc/localstack/init/ready.d/1_table-setup.sh
+      - ./functions/read-city-function/src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json
+      - ./functions/read-city-function/src/test/resources/localstack/table-setup.sh:/etc/localstack/init/ready.d/1_table-setup.sh
       - ./utils/docker/localstack/lambda-native-setup.sh:/etc/localstack/init/ready.d/2_lambda-setup.sh
     networks:
       - "cities-network"
     depends_on:
-      - "city-data-function"
+      - "read-city-function"
 
 volumes:
   cities-volume:

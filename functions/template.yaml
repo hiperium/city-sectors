@@ -70,23 +70,23 @@ Resources:
     UpdateReplacePolicy: Retain
     DeletionPolicy: !Ref ResourceDeletionPolicy
 
-  CityDataFunctionLogGroup:
+  ReadFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}/CityDataFunction"
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}/ReadCityFunction"
       RetentionInDays: !Ref LogRetentionInDays
     UpdateReplacePolicy: Retain
     DeletionPolicy: !Ref ResourceDeletionPolicy
 
-  CityDataFunction:
+  ReadFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./city-data-function
-      FunctionName: 'city-data-function'
-      Description: 'City Data function used for internal services only.'
+      CodeUri: ./read-city-function
+      FunctionName: 'read-city-function'
+      Description: 'Read city data function.'
       Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
       LoggingConfig:
-        LogGroup: !Ref CityDataFunctionLogGroup
+        LogGroup: !Ref ReadFunctionLogGroup
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref CitiesTable
@@ -96,11 +96,11 @@ Resources:
     Metadata:
       BuildMethod: makefile
 
-  CityDataFunctionLogAnomalyDetector:
+  ReadFunctionLogAnomalyDetector:
     Type: AWS::Logs::LogAnomalyDetector
     Properties:
       LogGroupArnList:
-        - !GetAtt CityDataFunctionLogGroup.Arn
+        - !GetAtt ReadFunctionLogGroup.Arn
       EvaluationFrequency: !Ref AnomalyDetectorEvaluationFrequency
       AnomalyVisibilityTime: 21 # days
 
@@ -109,6 +109,6 @@ Outputs:
     Description: "Cities DynamoDB table ARN."
     Value: !GetAtt CitiesTable.Arn
 
-  CityDataFunctionArn:
-    Description: "City Data function ARN."
-    Value: !GetAtt CityDataFunction.Arn
+  ReadFunctionArn:
+    Description: "Read City function ARN."
+    Value: !GetAtt ReadFunction.Arn
