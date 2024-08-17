@@ -38,14 +38,8 @@ mvn clean process-classes                    \
     -P tracing-agent
 ```
 
-In another terminal window, invoke the Lambda Function from the `project's` root directory:
-```bash
-curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
-  -d @functions/city-read-function/src/test/resources/requests/valid/lambda-valid-id-request.json
-  
-curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
-  -d @functions/city-read-function/src/test/resources/requests/non-valid/wrong-city-uuid.json
-```
+Then, navigate to the `functions/city-read-function/src/test/http/local.http` file, and execute the requests 
+to the deployed function.
 
 At this point, the Tracing Agent will generate the necessary configuration files for the native-image utility.
 You can exit the application after the request is completed by pressing `Ctrl+C`.

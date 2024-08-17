@@ -1,10 +1,13 @@
 package hiperium.city.read.function.mappers;
 
+import hiperium.cities.commons.loggers.HiperiumLogger;
 import hiperium.city.read.function.dto.CityDataResponse;
 import hiperium.city.read.function.entities.City;
 import hiperium.city.read.function.entities.CityStatus;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
@@ -16,6 +19,8 @@ import java.util.Map;
  */
 @Mapper(componentModel = "spring")
 public interface CityMapper {
+
+    HiperiumLogger LOGGER = new HiperiumLogger(CityMapper.class);
 
     /**
      * Converts a map of attribute values to a City object.
@@ -35,13 +40,11 @@ public interface CityMapper {
     /**
      * Converts a City object, HTTP status code, and error message to a CityDataResponse object.
      *
-     * @param city         The City object to convert.
-     * @param httpStatus   The HTTP status code.
-     * @param errorMessage The error message string.
+     * @param city The City object to convert.
      * @return A CityDataResponse object with the converted data.
      */
-    @Mapping(source = "city.id", target = "cityId")
-    CityDataResponse mapToCityResponse(City city, int httpStatus, String errorMessage);
+    @Mapping(target = "error", ignore = true)
+    CityDataResponse mapToCityResponse(City city);
 
     /**
      * Retrieves the string value associated with the given key from the attribute map.
@@ -65,5 +68,28 @@ public interface CityMapper {
      */
     default CityStatus getStatusEnumFromAttributesMap(Map<String, AttributeValue> itemAttributesMap) {
         return CityStatus.valueOf(this.getStringValueFromAttributesMap(itemAttributesMap, City.STATUS_COLUMN_NAME));
+    }
+
+    /**
+     * This method is an implementation of the `@AfterMapping` annotation and is used to perform additional operations after mapping a City object from a map of attribute values.
+     *
+     * @param city The City object that has been mapped.
+     * @param itemAttributesMap A map containing the attribute values of the City object. The keys represent the column names of the City table, and the values represent the corresponding
+     *  attribute values.
+     */
+    @AfterMapping
+    default void afterMapToCity(@MappingTarget City city, Map<String, AttributeValue> itemAttributesMap) {
+        LOGGER.debug("Mapped city", city);
+    }
+
+    /**
+     * Performs additional operations after mapping a City object to a CityDataResponse object.
+     *
+     * @param response The CityDataResponse object after mapping.
+     * @param city The City object before mapping.
+     */
+    @AfterMapping
+    default void afterMapToCityResponse(@MappingTarget CityDataResponse response, City city) {
+        LOGGER.debug("Mapped response", response);
     }
 }

@@ -110,5 +110,5 @@ Outputs:
     Value: !GetAtt CitiesTable.Arn
 
   ReadFunctionArn:
-    Description: "Cities read function ARN."
+    Description: "Read City Function ARN."
     Value: !GetAtt ReadFunction.Arn

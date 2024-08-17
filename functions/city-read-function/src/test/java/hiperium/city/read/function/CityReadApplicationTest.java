@@ -16,7 +16,7 @@ import org.springframework.messaging.Message;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,14 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CityReadApplicationTest extends TestContainersBase {
 
     @Autowired
-    private DynamoDbClient dynamoDbClient;
+    private DynamoDbAsyncClient dynamoDbAsyncClient;
 
     @Autowired
     private FunctionCatalog functionCatalog;
 
     @BeforeEach
     void init() {
-        TestsUtils.waitForDynamoDbToBeReady(this.dynamoDbClient);
+        TestsUtils.waitForDynamoDbToBeReady(this.dynamoDbAsyncClient);
     }
 
     @ParameterizedTest
@@ -53,9 +53,7 @@ class CityReadApplicationTest extends TestContainersBase {
             StepVerifier.create(function.apply(requestMessage))
                 .assertNext(response -> {
                     assertThat(response).isNotNull();
-                    // The status code should be a success code.
-                    int statusCode = response.httpStatus();
-                    assertThat(statusCode >= HttpStatus.OK.value() && statusCode <= HttpStatus.IM_USED.value()).isTrue();
+                    assertThat(response.error()).isNull();
                 })
                 .verifyComplete();
         }
@@ -64,10 +62,10 @@ class CityReadApplicationTest extends TestContainersBase {
     @ParameterizedTest
     @DisplayName("Non-valid requests")
     @ValueSource(strings = {
-        "requests/non-valid/empty-city-id.json",
-        "requests/non-valid/wrong-city-uuid.json",
-        "requests/non-valid/non-existing-city.json",
-        "requests/non-valid/disabled-city.json"
+        "requests/invalid/empty-city-id.json",
+        "requests/invalid/wrong-payload.json",
+        "requests/invalid/wrong-city-id.json",
+        "requests/invalid/non-existing-city.json",
     })
     void givenNonValidRequests_whenInvokeLambdaFunction_thenReturnErrors(String jsonFilePath) throws IOException {
         Function<Message<byte[]>, Mono<CityDataResponse>> createEventFunction = this.getFunctionUnderTest();
@@ -78,9 +76,9 @@ class CityReadApplicationTest extends TestContainersBase {
             StepVerifier.create(createEventFunction.apply(requestMessage))
                 .assertNext(response -> {
                     assertThat(response).isNotNull();
-                    // The status code should be an error code.
-                    int statusCode = response.httpStatus();
-                    assertThat(statusCode >= HttpStatus.OK.value() && statusCode <= HttpStatus.IM_USED.value()).isFalse();
+                    assertThat(response.error()).isNotNull();
+                    int errorCode = response.error().errorCode();
+                    assertThat(errorCode >= HttpStatus.OK.value() && errorCode <= HttpStatus.IM_USED.value()).isFalse();
                 })
                 .verifyComplete();
         }

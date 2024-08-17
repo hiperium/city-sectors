@@ -14,7 +14,7 @@ import java.util.function.Function;
 /**
  * Represents a function that finds a city by its identifier.
  */
-public class CityReadFunction implements Function<Message<byte[]>, Mono<CityDataResponse>> {
+public class ReadFunction implements Function<Message<byte[]>, Mono<CityDataResponse>> {
 
     private final CityMapper cityMapper;
     private final CitiesService citiesService;
@@ -23,13 +23,13 @@ public class CityReadFunction implements Function<Message<byte[]>, Mono<CityData
      * Represents a function that finds a city by its identifier.
      * This function is used to retrieve city information based on the provided city ID request message.
      */
-    public CityReadFunction(CityMapper cityMapper, CitiesService citiesService) {
+    public ReadFunction(CityMapper cityMapper, CitiesService citiesService) {
         this.cityMapper = cityMapper;
         this.citiesService = citiesService;
     }
 
     /**
-     * Applies the CityReadFunction to a given city ID request message and returns the CityDataResponse.
+     * Applies the ReadFunction to a given city ID request message and returns the CityDataResponse.
      *
      * @param requestMessage The city ID request message to be processed.
      * @return A Mono containing the CityDataResponse.

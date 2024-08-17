@@ -8,6 +8,8 @@ It includes the following files and folders.
 The application uses AWS resources like Lambda and DynamoDB.
 These resources are defined in the `template.yaml` file in the parent project.
 
+
+---
 ## Running Integration Tests using Testcontainers.
 Tests are defined in the `src/test` directory inside each Lambda function project.
 
@@ -41,6 +43,7 @@ curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
 The other Spring profiles don't have this feature enabled.
 
 
+
 ---
 ## Deploying Lambda function Locally using Docker Compose.
 To deploy the Lambda Function and LocalStack containers, use the following command from the `project's root` directory:
@@ -48,12 +51,9 @@ To deploy the Lambda Function and LocalStack containers, use the following comma
 docker compose up --build
 ```
 
-### Invoke Lambda function deployed in Docker container.
-The following command will invoke the Lambda Function using CURL from the `project's root` directory:
-```bash
-curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" \
-  -d @functions/city-read-function/src/test/resources/requests/valid/lambda-valid-id-request.json
-```
+### Invoke Lambda functions deployed in Docker Compose.
+Navigate to the `functions/city-read-function/src/test/http/compose.http` file, and execute the requests
+to the deployed function.
 
 ### Getting records from DynamoDB.
 Execute the following command to get the created records in DynamoDB:
@@ -124,6 +124,7 @@ sam delete                  \
   --no-prompts              \
   --profile "city-dev"
 ```
+
 
 ---
 ## Resources
