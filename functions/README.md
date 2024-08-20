@@ -22,8 +22,8 @@ mvn test -f functions/city-read-function/pom.xml
 ---
 ## Deploying Lambda function Locally using IntelliJ.
 Start the main class from the IDE to run the Lambda Function.
-The project uses the "local" profile as default,
-so this profile configures the Docker Compose deployment for the LocalStack environment:
+The project uses the `local` Spring profile as default, so this profile configures the Docker Compose deployment 
+for the LocalStack environment:
 
 ```properties
 spring.docker.compose.enabled=true
@@ -32,26 +32,22 @@ spring.docker.compose.lifecycle-management=start_and_stop
 spring.docker.compose.file=functions/city-read-function/tools/spring/compose.yaml
 ```
 
-### Invoke Lambda function deployed using IntelliJ.
-You can invoke the Lambda Function from the `project's root` directory using CURL:
-```bash
-curl -H "Content-Type: application/json" "http://localhost:8080/findById" \
-  -d @functions/city-read-function/src/test/resources/requests/valid/lambda-valid-id-request.json
-```
+### Invoke Lambda function deployed with IntelliJ.
+Navigate to the `functions/city-read-function/src/test/http/compose.http` file, and execute the requests
+to the deployed function.
 
-**NOTE:** This is used only for local development and testing purposes.
-The other Spring profiles don't have this feature enabled.
-
+**NOTE:** The `local` profile is used only for local development and testing purposes.
+The other Spring profiles don't have this feature disabled by default.
 
 
 ---
-## Deploying Lambda function Locally using Docker Compose.
+## Deploying Lambda function using Docker Compose.
 To deploy the Lambda Function and LocalStack containers, use the following command from the `project's root` directory:
 ```bash
 docker compose up --build
 ```
 
-### Invoke Lambda functions deployed in Docker Compose.
+### Invoke Lambda functions deployed with Docker Compose.
 Navigate to the `functions/city-read-function/src/test/http/compose.http` file, and execute the requests
 to the deployed function.
 

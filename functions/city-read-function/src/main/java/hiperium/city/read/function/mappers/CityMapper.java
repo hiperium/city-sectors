@@ -89,7 +89,7 @@ public interface CityMapper {
      * @param city The City object before mapping.
      */
     @AfterMapping
-    default void afterMapToCityResponse(@MappingTarget CityDataResponse response, City city) {
+    default void afterMapToResponse(@MappingTarget CityDataResponse response, City city) {
         LOGGER.debug("Mapped response", response);
     }
 }

@@ -5,7 +5,6 @@ import hiperium.city.read.function.entities.City;
 import hiperium.city.read.function.mappers.CityMapper;
 import hiperium.city.read.function.services.CitiesService;
 import hiperium.city.read.function.utils.FunctionUtils;
-import hiperium.city.read.function.validations.BeanValidations;
 import org.springframework.messaging.Message;
 import reactor.core.publisher.Mono;
 
@@ -37,7 +36,7 @@ public class ReadFunction implements Function<Message<byte[]>, Mono<CityDataResp
     @Override
     public Mono<CityDataResponse> apply(Message<byte[]> requestMessage) {
         return Mono.fromCallable(() -> FunctionUtils.deserializeRequest(requestMessage))
-            .doOnNext(BeanValidations::validateRequest)
+            .doOnNext(FunctionUtils::validateRequest)
             .flatMap(this.citiesService::findById)
             .flatMap(this::mapResponse)
             .onErrorResume(FunctionUtils::handleRuntimeException);
