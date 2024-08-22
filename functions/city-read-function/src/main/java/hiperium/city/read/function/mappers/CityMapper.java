@@ -1,7 +1,7 @@
 package hiperium.city.read.function.mappers;
 
 import hiperium.cities.commons.loggers.HiperiumLogger;
-import hiperium.city.read.function.dto.CityDataResponse;
+import hiperium.city.read.function.dto.ReadCityResponse;
 import hiperium.city.read.function.entities.City;
 import hiperium.city.read.function.entities.CityStatus;
 import org.mapstruct.AfterMapping;
@@ -38,13 +38,13 @@ public interface CityMapper {
     City mapToCity(Map<String, AttributeValue> itemAttributesMap);
 
     /**
-     * Converts a City object, HTTP status code, and error message to a CityDataResponse object.
+     * Converts a City object, HTTP status code, and error message to a ReadCityResponse object.
      *
      * @param city The City object to convert.
-     * @return A CityDataResponse object with the converted data.
+     * @return A ReadCityResponse object with the converted data.
      */
     @Mapping(target = "error", ignore = true)
-    CityDataResponse mapToCityResponse(City city);
+    ReadCityResponse mapToCityResponse(City city);
 
     /**
      * Retrieves the string value associated with the given key from the attribute map.
@@ -83,13 +83,13 @@ public interface CityMapper {
     }
 
     /**
-     * Performs additional operations after mapping a City object to a CityDataResponse object.
+     * Performs additional operations after mapping a City object to a ReadCityResponse object.
      *
-     * @param response The CityDataResponse object after mapping.
+     * @param response The ReadCityResponse object after mapping.
      * @param city The City object before mapping.
      */
     @AfterMapping
-    default void afterMapToResponse(@MappingTarget CityDataResponse response, City city) {
+    default void afterMapToResponse(@MappingTarget ReadCityResponse response, City city) {
         LOGGER.debug("Mapped response", response);
     }
 }

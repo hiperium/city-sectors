@@ -2,7 +2,7 @@ package hiperium.city.read.function.repository;
 
 import hiperium.cities.commons.exceptions.CityException;
 import hiperium.cities.commons.loggers.HiperiumLogger;
-import hiperium.city.read.function.dto.CityDataRequest;
+import hiperium.city.read.function.dto.ReadCityRequest;
 import hiperium.city.read.function.entities.City;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
@@ -36,16 +36,16 @@ public class CitiesRepository {
     }
 
     /**
-     * Retrieves a City record from the DynamoDB table based on the provided CityDataRequest asynchronously.
+     * Retrieves a City record from the DynamoDB table based on the provided ReadCityRequest asynchronously.
      *
-     * @param cityDataRequest The CityDataRequest object containing the unique identifier of the city to retrieve.
+     * @param readCityRequest The ReadCityRequest object containing the unique identifier of the city to retrieve.
      * @return A CompletableFuture that completes with a Map representing the retrieved City record.
      *         The keys in the Map represent the column names of the City table,
      *         and the values represent the corresponding attribute values.
      */
-    public CompletableFuture<Map<String, AttributeValue>> findByIdAsync(final CityDataRequest cityDataRequest) {
+    public CompletableFuture<Map<String, AttributeValue>> findByIdAsync(final ReadCityRequest readCityRequest) {
         HashMap<String, AttributeValue> keyToGet = new HashMap<>();
-        keyToGet.put(City.ID_COLUMN_NAME, AttributeValue.builder().s(cityDataRequest.cityId()).build());
+        keyToGet.put(City.ID_COLUMN_NAME, AttributeValue.builder().s(readCityRequest.cityId()).build());
         GetItemRequest itemRequest = GetItemRequest.builder()
             .key(keyToGet)
             .tableName(City.TABLE_NAME)
@@ -54,7 +54,7 @@ public class CitiesRepository {
         return this.dynamoDbAsyncClient.getItem(itemRequest)
             .thenApply(GetItemResponse::item)
             .exceptionally(exception -> {
-                LOGGER.error("Error when trying to find a City by ID.", exception.getMessage(), cityDataRequest);
+                LOGGER.error("Error when trying to find a City by ID.", exception.getMessage(), readCityRequest);
                 throw new CityException("Error when trying to find a City by ID.");
             });
     }

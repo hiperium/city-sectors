@@ -15,7 +15,7 @@
     <description>Provides City data to services inside the Hiperium City project.</description>
 
     <properties>
-        <start-class>hiperium.city.read.function.CityReadApplication</start-class>
+        <start-class>hiperium.city.read.function.ReadCityApplication</start-class>
     </properties>
 
     <dependencies>

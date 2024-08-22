@@ -1,8 +1,8 @@
 package hiperium.city.read.function;
 
 import hiperium.city.read.function.common.TestContainersBase;
-import hiperium.city.read.function.configurations.FunctionsConfig;
-import hiperium.city.read.function.dto.CityDataResponse;
+import hiperium.city.read.function.configurations.FunctionConfig;
+import hiperium.city.read.function.dto.ReadCityResponse;
 import hiperium.city.read.function.utils.TestsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,8 +25,8 @@ import java.util.function.Function;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
-@FunctionalSpringBootTest(classes = CityReadApplication.class)
-class CityReadApplicationTest extends TestContainersBase {
+@FunctionalSpringBootTest(classes = ReadCityApplication.class)
+class ReadCityApplicationTest extends TestContainersBase {
 
     @Autowired
     private DynamoDbAsyncClient dynamoDbAsyncClient;
@@ -45,7 +45,7 @@ class CityReadApplicationTest extends TestContainersBase {
         "requests/valid/lambda-valid-id-request.json"
     })
     void givenValidRequest_whenInvokeLambdaFunction_thenExecuteSuccessfully(String jsonFilePath) throws IOException {
-        Function<Message<byte[]>, Mono<CityDataResponse>> function = this.getFunctionUnderTest();
+        Function<Message<byte[]>, Mono<ReadCityResponse>> function = this.getFunctionUnderTest();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath)) {
             assert inputStream != null;
             Message<byte[]> requestMessage = TestsUtils.createMessage(inputStream.readAllBytes());
@@ -68,7 +68,7 @@ class CityReadApplicationTest extends TestContainersBase {
         "requests/invalid/non-existing-city.json",
     })
     void givenNonValidRequests_whenInvokeLambdaFunction_thenReturnErrors(String jsonFilePath) throws IOException {
-        Function<Message<byte[]>, Mono<CityDataResponse>> createEventFunction = this.getFunctionUnderTest();
+        Function<Message<byte[]>, Mono<ReadCityResponse>> createEventFunction = this.getFunctionUnderTest();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath)) {
             assert inputStream != null;
             Message<byte[]> requestMessage = TestsUtils.createMessage(inputStream.readAllBytes());
@@ -84,9 +84,9 @@ class CityReadApplicationTest extends TestContainersBase {
         }
     }
 
-    private Function<Message<byte[]>, Mono<CityDataResponse>> getFunctionUnderTest() {
-        Function<Message<byte[]>, Mono<CityDataResponse>> function = this.functionCatalog.lookup(Function.class,
-            FunctionsConfig.FIND_BY_ID_BEAN_NAME);
+    private Function<Message<byte[]>, Mono<ReadCityResponse>> getFunctionUnderTest() {
+        Function<Message<byte[]>, Mono<ReadCityResponse>> function = this.functionCatalog.lookup(Function.class,
+            FunctionConfig.FUNCTION_BEAN_NAME);
         assertThat(function).isNotNull();
         return function;
     }

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hiperium.cities.commons.exceptions.ParsingException;
 import hiperium.cities.commons.loggers.HiperiumLogger;
 import hiperium.cities.commons.utils.ExceptionHandlerUtil;
-import hiperium.city.read.function.dto.CityDataRequest;
-import hiperium.city.read.function.dto.CityDataResponse;
+import hiperium.city.read.function.dto.ReadCityRequest;
+import hiperium.city.read.function.dto.ReadCityResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidationException;
@@ -30,15 +30,15 @@ public final class FunctionUtils {
     private static final HiperiumLogger LOGGER = new HiperiumLogger(FunctionUtils.class);
 
     /**
-     * Deserializes a request message to a {@link CityDataRequest} object.
+     * Deserializes a request message to a {@link ReadCityRequest} object.
      *
      * @param requestMessage The request message to be deserialized.
-     * @return The deserialized {@link CityDataRequest} object.
+     * @return The deserialized {@link ReadCityRequest} object.
      * @throws ParsingException If the deserialization fails.
      */
-    public static CityDataRequest deserializeRequest(Message<byte[]> requestMessage) {
+    public static ReadCityRequest deserializeRequest(Message<byte[]> requestMessage) {
         try {
-            return OBJECT_MAPPER.readValue(requestMessage.getPayload(), CityDataRequest.class);
+            return OBJECT_MAPPER.readValue(requestMessage.getPayload(), ReadCityRequest.class);
         } catch (IOException exception) {
             String messageContent = new String(requestMessage.getPayload(), StandardCharsets.UTF_8);
             LOGGER.error("Couldn't deserialize request message.", exception.getMessage(), messageContent);
@@ -47,33 +47,33 @@ public final class FunctionUtils {
     }
 
     /**
-     * Validates a CityDataRequest object using bean validation.
+     * Validates a ReadCityRequest object using bean validation.
      *
-     * @param dataRequest The CityDataRequest object to be validated.
+     * @param dataRequest The ReadCityRequest object to be validated.
      * @throws ValidationException if the DeviceDataRequest object is invalid.
      */
-    public static void validateRequest(CityDataRequest dataRequest) {
+    public static void validateRequest(ReadCityRequest dataRequest) {
         LOGGER.debug("Validating request message", dataRequest);
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
-            Set<ConstraintViolation<CityDataRequest>> violations = validator.validate(dataRequest);
+            Set<ConstraintViolation<ReadCityRequest>> violations = validator.validate(dataRequest);
             if (!violations.isEmpty()) {
-                ConstraintViolation<CityDataRequest> firstViolation = violations.iterator().next();
+                ConstraintViolation<ReadCityRequest> firstViolation = violations.iterator().next();
                 throw new ValidationException(firstViolation.getMessage());
             }
         }
     }
 
     /**
-     * Handles a runtime exception by generating an error response and encapsulating it in a CityDataResponse object.
+     * Handles a runtime exception by generating an error response and encapsulating it in a ReadCityResponse object.
      *
      * @param throwable The runtime exception to handle.
-     * @return A Mono that emits a CityDataResponse object containing the generated error response.
+     * @return A Mono that emits a ReadCityResponse object containing the generated error response.
      */
-    public static Mono<CityDataResponse> handleRuntimeException(Throwable throwable) {
+    public static Mono<ReadCityResponse> handleRuntimeException(Throwable throwable) {
         return Mono.just(throwable)
             .map(ExceptionHandlerUtil::generateErrorResponse)
-            .map(errorResponse -> new CityDataResponse(null, null, null, errorResponse))
+            .map(errorResponse -> new ReadCityResponse(null, null, null, errorResponse))
             .doOnNext(deviceUpdateResponse -> LOGGER.debug("Mapped response", deviceUpdateResponse));
     }
 }

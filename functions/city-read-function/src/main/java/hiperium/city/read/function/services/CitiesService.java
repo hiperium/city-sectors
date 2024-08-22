@@ -2,7 +2,7 @@ package hiperium.city.read.function.services;
 
 import hiperium.cities.commons.exceptions.ResourceNotFoundException;
 import hiperium.cities.commons.loggers.HiperiumLogger;
-import hiperium.city.read.function.dto.CityDataRequest;
+import hiperium.city.read.function.dto.ReadCityRequest;
 import hiperium.city.read.function.entities.City;
 import hiperium.city.read.function.mappers.CityMapper;
 import hiperium.city.read.function.repository.CitiesRepository;
@@ -33,18 +33,18 @@ public class CitiesService {
     }
 
     /**
-     * Retrieves the City object based on the provided CityDataRequest.
+     * Retrieves the City object based on the provided ReadCityRequest.
      *
-     * @param cityDataRequest The CityDataRequest object containing the unique identifier of the city.
+     * @param readCityRequest The ReadCityRequest object containing the unique identifier of the city.
      * @return A Mono that emits the City object if it is found and meets certain conditions.
      *         Otherwise, an error is emitted: ResourceNotFoundException if the city is not found in the repository,
      *         or DisabledCityException if the city is disabled.
      */
-    public Mono<City> findById(final CityDataRequest cityDataRequest) {
-        return Mono.fromCompletionStage(() -> this.citiesRepository.findByIdAsync(cityDataRequest))
+    public Mono<City> findById(final ReadCityRequest readCityRequest) {
+        return Mono.fromCompletionStage(() -> this.citiesRepository.findByIdAsync(readCityRequest))
             .handle((returnedItem, sink) -> {
                 if (Objects.isNull(returnedItem) || returnedItem.isEmpty()) {
-                    LOGGER.error("No city found with the provided ID.", cityDataRequest);
+                    LOGGER.error("No city found with the provided ID.", readCityRequest);
                     sink.error(new ResourceNotFoundException("No city found with the provided ID."));
                     return;
                 }

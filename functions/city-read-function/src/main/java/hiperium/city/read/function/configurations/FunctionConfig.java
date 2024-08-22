@@ -1,7 +1,7 @@
 package hiperium.city.read.function.configurations;
 
 import hiperium.cities.commons.loggers.HiperiumLogger;
-import hiperium.city.read.function.dto.CityDataResponse;
+import hiperium.city.read.function.dto.ReadCityResponse;
 import hiperium.city.read.function.functions.ReadFunction;
 import hiperium.city.read.function.mappers.CityMapper;
 import hiperium.city.read.function.services.CitiesService;
@@ -16,11 +16,11 @@ import java.util.function.Function;
  * This class represents the configuration for functions in the application.
  */
 @Configuration(proxyBeanMethods = false)
-public class FunctionsConfig {
+public class FunctionConfig {
 
-    public static final String FIND_BY_ID_BEAN_NAME = "findById";
+    public static final String FUNCTION_BEAN_NAME = "findById";
 
-    private static final HiperiumLogger LOGGER = new HiperiumLogger(FunctionsConfig.class);
+    private static final HiperiumLogger LOGGER = new HiperiumLogger(FunctionConfig.class);
 
     private final CityMapper cityMapper;
     private final CitiesService citiesService;
@@ -28,7 +28,7 @@ public class FunctionsConfig {
     /**
      * This class represents the configuration for functions in the application.
      */
-    public FunctionsConfig(CityMapper cityMapper, CitiesService citiesService) {
+    public FunctionConfig(CityMapper cityMapper, CitiesService citiesService) {
         this.cityMapper = cityMapper;
         this.citiesService = citiesService;
     }
@@ -38,8 +38,8 @@ public class FunctionsConfig {
      *
      * @return The function that finds a city by its identifier.
      */
-    @Bean(FIND_BY_ID_BEAN_NAME)
-    public Function<Message<byte[]>, Mono<CityDataResponse>> findByIdFunction() {
+    @Bean(FUNCTION_BEAN_NAME)
+    public Function<Message<byte[]>, Mono<ReadCityResponse>> findByIdFunction() {
         LOGGER.info("Creating City Data Function bean...");
         return new ReadFunction(this.cityMapper, this.citiesService);
     }
