@@ -87,7 +87,7 @@
   }, {
     "pattern":"\\Qhiperium/city/read/function/configurations/DynamoDbClientConfig.class\\E"
   }, {
-    "pattern":"\\Qhiperium/city/read/function/configurations/FunctionsConfig.class\\E"
+    "pattern":"\\Qhiperium/city/read/function/configurations/FunctionConfig.class\\E"
   }, {
     "pattern":"\\Qhiperium/city/read/function/mappers/CityMapper.class\\E"
   }, {

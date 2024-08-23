@@ -154,7 +154,7 @@
   "name":"com.fasterxml.jackson.core.ObjectCodec",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"getJsonFactory","parameterTypes":[] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.ResolvedType"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.TypeReference"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","java.lang.Class"] }]
+  "methods":[{"name":"getJsonFactory","parameterTypes":[] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.TypeReference"] }, {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","java.lang.Class"] }]
 },
 {
   "name":"com.fasterxml.jackson.core.TreeCodec",
@@ -354,7 +354,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setNumericTimestamps","parameterTypes":["boolean"] }, {"name":"setPrettyPrint","parameterTypes":["boolean"] }]
 },
 {
-  "name":"hiperium.city.read.function.CityReadApplication",
+  "name":"hiperium.city.read.function.ReadCityApplication",
   "allDeclaredFields":true,
   "allDeclaredClasses":true,
   "queryAllDeclaredMethods":true,
@@ -362,7 +362,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }]
 },
 {
-  "name":"hiperium.city.read.function.CityReadApplication$$SpringCGLIB$$0",
+  "name":"hiperium.city.read.function.ReadCityApplication$$SpringCGLIB$$0",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
@@ -377,21 +377,21 @@
   "methods":[{"name":"<init>","parameterTypes":["org.springframework.core.env.Environment"] }, {"name":"dynamoDbAsyncClient","parameterTypes":[] }]
 },
 {
-  "name":"hiperium.city.read.function.configurations.FunctionsConfig",
+  "name":"hiperium.city.read.function.configurations.FunctionConfig",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["hiperium.city.read.function.mappers.CityMapper","hiperium.city.read.function.services.CitiesService"] }, {"name":"findByIdFunction","parameterTypes":[] }]
 },
 {
-  "name":"hiperium.city.read.function.dto.CityDataRequest",
+  "name":"hiperium.city.read.function.dto.ReadCityRequest",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }, {"name":"cityId","parameterTypes":[] }]
 },
 {
-  "name":"hiperium.city.read.function.dto.CityDataResponse",
+  "name":"hiperium.city.read.function.dto.ReadCityResponse",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"error","parameterTypes":[] }, {"name":"id","parameterTypes":[] }, {"name":"name","parameterTypes":[] }, {"name":"timezone","parameterTypes":[] }]
@@ -400,7 +400,7 @@
   "name":"hiperium.city.read.function.entities.City",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"country","parameterTypes":[] }, {"name":"id","parameterTypes":[] }, {"name":"name","parameterTypes":[] }, {"name":"status","parameterTypes":[] }, {"name":"timezone","parameterTypes":[] }]
+  "methods":[{"name":"countryCode","parameterTypes":[] }, {"name":"id","parameterTypes":[] }, {"name":"name","parameterTypes":[] }, {"name":"status","parameterTypes":[] }, {"name":"timezone","parameterTypes":[] }]
 },
 {
   "name":"hiperium.city.read.function.entities.CityStatus",
@@ -417,7 +417,7 @@
   "name":"hiperium.city.read.function.mappers.CityMapper",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"afterMapToCity","parameterTypes":["hiperium.city.read.function.entities.City","java.util.Map"] }, {"name":"afterMapToCityResponse","parameterTypes":["hiperium.city.read.function.dto.CityDataResponse","hiperium.city.read.function.entities.City"] }, {"name":"getStatusEnumFromAttributesMap","parameterTypes":["java.util.Map"] }, {"name":"getStringValueFromAttributesMap","parameterTypes":["java.util.Map","java.lang.String"] }]
+  "methods":[{"name":"afterMapToCity","parameterTypes":["hiperium.city.read.function.entities.City","java.util.Map"] }, {"name":"afterMapToResponse","parameterTypes":["hiperium.city.read.function.dto.ReadCityResponse","hiperium.city.read.function.entities.City"] }, {"name":"getStatusEnumFromAttributesMap","parameterTypes":["java.util.Map"] }, {"name":"getStringValueFromAttributesMap","parameterTypes":["java.util.Map","java.lang.String"] }]
 },
 {
   "name":"hiperium.city.read.function.mappers.CityMapperImpl",
@@ -1472,10 +1472,6 @@
 {
   "name":"java.util.concurrent.atomic.Striped64",
   "fields":[{"name":"base"}, {"name":"cellsBusy"}]
-},
-{
-  "name":"java.util.concurrent.atomic.Striped64$Cell",
-  "fields":[{"name":"value"}]
 },
 {
   "name":"java.util.function.BiPredicate",

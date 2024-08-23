@@ -4,6 +4,7 @@ import hiperium.cities.commons.exceptions.CityException;
 import hiperium.cities.commons.loggers.HiperiumLogger;
 import hiperium.city.read.function.dto.ReadCityRequest;
 import hiperium.city.read.function.entities.City;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -28,6 +29,9 @@ public class CitiesRepository {
 
     private final DynamoDbAsyncClient dynamoDbAsyncClient;
 
+    @Value("${hiperium.cities.table.name}")
+    private String tableName;
+
     /**
      * The CitiesRepository class is responsible for retrieving City objects from the DynamoDB table.
      */
@@ -48,7 +52,7 @@ public class CitiesRepository {
         keyToGet.put(City.ID_COLUMN_NAME, AttributeValue.builder().s(readCityRequest.cityId()).build());
         GetItemRequest itemRequest = GetItemRequest.builder()
             .key(keyToGet)
-            .tableName(City.TABLE_NAME)
+            .tableName(this.tableName)
             .build();
 
         return this.dynamoDbAsyncClient.getItem(itemRequest)

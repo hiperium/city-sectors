@@ -1,14 +1,15 @@
 package hiperium.city.read.function;
 
+import hiperium.cities.commons.utils.TestUtils;
 import hiperium.city.read.function.common.TestContainersBase;
 import hiperium.city.read.function.configurations.FunctionConfig;
 import hiperium.city.read.function.dto.ReadCityResponse;
-import hiperium.city.read.function.utils.TestsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.function.context.FunctionCatalog;
 import org.springframework.cloud.function.context.test.FunctionalSpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -34,9 +35,12 @@ class ReadCityApplicationTest extends TestContainersBase {
     @Autowired
     private FunctionCatalog functionCatalog;
 
+    @Value("${hiperium.cities.table.name}")
+    private String tableName;
+
     @BeforeEach
     void init() {
-        TestsUtils.waitForDynamoDbToBeReady(this.dynamoDbAsyncClient);
+        TestUtils.waitForDynamoDbToBeReady(this.dynamoDbAsyncClient, this.tableName);
     }
 
     @ParameterizedTest
@@ -48,7 +52,7 @@ class ReadCityApplicationTest extends TestContainersBase {
         Function<Message<byte[]>, Mono<ReadCityResponse>> function = this.getFunctionUnderTest();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath)) {
             assert inputStream != null;
-            Message<byte[]> requestMessage = TestsUtils.createMessage(inputStream.readAllBytes());
+            Message<byte[]> requestMessage = TestUtils.createMessage(inputStream.readAllBytes());
 
             StepVerifier.create(function.apply(requestMessage))
                 .assertNext(response -> {
@@ -71,7 +75,7 @@ class ReadCityApplicationTest extends TestContainersBase {
         Function<Message<byte[]>, Mono<ReadCityResponse>> createEventFunction = this.getFunctionUnderTest();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(jsonFilePath)) {
             assert inputStream != null;
-            Message<byte[]> requestMessage = TestsUtils.createMessage(inputStream.readAllBytes());
+            Message<byte[]> requestMessage = TestUtils.createMessage(inputStream.readAllBytes());
 
             StepVerifier.create(createEventFunction.apply(requestMessage))
                 .assertNext(response -> {

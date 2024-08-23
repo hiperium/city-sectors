@@ -7,10 +7,10 @@
             "S": "a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
           },
           "name": {
-            "S": "Hiperium City"
+            "S": "Hiperium City - Enabled"
           },
-          "country": {
-            "S": "Ecuador"
+          "countryCode": {
+            "S": "EC"
           },
           "status": {
             "S": "ENABLED"
@@ -34,10 +34,10 @@
             "S": "a0ecb466-7ef5-47bf-a1ca-12f9f9328529"
           },
           "name": {
-            "S": "Disabled city example"
+            "S": "Hiperium City - Disabled"
           },
-          "country": {
-            "S": "Disabled country example"
+          "countryCode": {
+            "S": "EC"
           },
           "status": {
             "S": "DISABLED"

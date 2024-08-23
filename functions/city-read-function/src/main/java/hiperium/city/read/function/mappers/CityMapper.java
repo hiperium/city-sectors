@@ -30,11 +30,11 @@ public interface CityMapper {
      *                          and the values represent the corresponding attribute values.
      * @return A City object with the attribute values mapped from the itemAttributesMap.
      */
-    @Mapping(target = "id",       expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.ID_COLUMN_NAME))")
-    @Mapping(target = "name",     expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.NAME_COLUMN_NAME))")
-    @Mapping(target = "status",   expression = "java(getStatusEnumFromAttributesMap(itemAttributesMap))")
-    @Mapping(target = "country",  expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.COUNTRY_COLUMN_NAME))")
-    @Mapping(target = "timezone", expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.TIMEZONE_COLUMN_NAME))")
+    @Mapping(target = "id",          expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.ID_COLUMN_NAME))")
+    @Mapping(target = "name",        expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.NAME_COLUMN_NAME))")
+    @Mapping(target = "status",      expression = "java(getStatusEnumFromAttributesMap(itemAttributesMap))")
+    @Mapping(target = "timezone",    expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.TIMEZONE_COLUMN_NAME))")
+    @Mapping(target = "countryCode", expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.COUNTRY_CODE_COLUMN_NAME))")
     City mapToCity(Map<String, AttributeValue> itemAttributesMap);
 
     /**
