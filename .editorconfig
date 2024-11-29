@@ -7,9 +7,8 @@ end_of_line = lf
 indent_style = space
 insert_final_newline = true
 
-[*.{java,ts,sh}]
+[*.{java,ts,sh,md}]
 max_line_length = 120
 
 [*.{yaml,yml,json}]
 indent_size = 2
-

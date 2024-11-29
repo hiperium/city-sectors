@@ -1,95 +1,84 @@
 package hiperium.city.read.function.mappers;
 
+import hiperium.cities.commons.enums.RecordStatus;
+import hiperium.cities.commons.exceptions.CityException;
 import hiperium.cities.commons.loggers.HiperiumLogger;
-import hiperium.city.read.function.dto.ReadCityResponse;
-import hiperium.city.read.function.entities.City;
-import hiperium.city.read.function.entities.CityStatus;
-import org.mapstruct.AfterMapping;
+import hiperium.cities.commons.utils.DateTimeUtils;
+import hiperium.city.read.function.commons.CommonAttributes;
+import hiperium.city.read.function.commons.MetadataAttributes;
+import hiperium.city.read.function.entities.CityEntity;
+import hiperium.city.read.function.entities.SectorEntity;
+import hiperium.city.read.function.utils.FunctionUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
+import java.util.Objects;
 
-/**
- * CityMapper is an interface used for mapping attribute values of a City object to a Map object and vice versa.
- * It provides methods for converting City objects to Map objects and Map objects to City objects.
- * This interface uses annotations from the MapStruct library for mapping.
- */
 @Mapper(componentModel = "spring")
 public interface CityMapper {
 
-    HiperiumLogger LOGGER = new HiperiumLogger(CityMapper.class);
+    @Mapping(target = "commonAttributes",   expression = "java(mapCommonAttributes(item))")
+    @Mapping(target = "timezone",           expression = "java(getAttributeValue(item, \"timezone\"))")
+    @Mapping(target = "languageCode",       expression = "java(getAttributeValue(item, \"languageCode\"))")
+    @Mapping(target = "countryCode",        expression = "java(getAttributeValue(item, \"countryCode\"))")
+    @Mapping(target = "metadataAttributes", expression = "java(mapMetadataAttributes(item))")
+    CityEntity mapCityDataResponse(Map<String, AttributeValue> item);
 
-    /**
-     * Converts a map of attribute values to a City object.
-     *
-     * @param itemAttributesMap A map containing attribute values of a City object.
-     *                          The keys represent the column names of the City table,
-     *                          and the values represent the corresponding attribute values.
-     * @return A City object with the attribute values mapped from the itemAttributesMap.
-     */
-    @Mapping(target = "id",          expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.ID_COLUMN_NAME))")
-    @Mapping(target = "name",        expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.NAME_COLUMN_NAME))")
-    @Mapping(target = "status",      expression = "java(getStatusEnumFromAttributesMap(itemAttributesMap))")
-    @Mapping(target = "timezone",    expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.TIMEZONE_COLUMN_NAME))")
-    @Mapping(target = "countryCode", expression = "java(getStringValueFromAttributesMap(itemAttributesMap, City.COUNTRY_CODE_COLUMN_NAME))")
-    City mapToCity(Map<String, AttributeValue> itemAttributesMap);
+    @Mapping(target = "commonAttributes",   expression = "java(mapCommonAttributes(item))")
+    @Mapping(target = "latitude",           expression = "java(getAttributeValue(item, \"latitude\"))")
+    @Mapping(target = "longitude",          expression = "java(getAttributeValue(item, \"longitude\"))")
+    @Mapping(target = "metadataAttributes", expression = "java(mapMetadataAttributes(item))")
+    SectorEntity mapSectorsDataResponse(Map<String, AttributeValue> item);
 
-    /**
-     * Converts a City object, HTTP status code, and error message to a ReadCityResponse object.
-     *
-     * @param city The City object to convert.
-     * @return A ReadCityResponse object with the converted data.
-     */
-    @Mapping(target = "error", ignore = true)
-    ReadCityResponse mapToCityResponse(City city);
-
-    /**
-     * Retrieves the string value associated with the given key from the attribute map.
-     * If the key is present in the map, the corresponding value is returned as a string.
-     * If the key is not present, null is returned.
-     *
-     * @param attributesMap The map containing attribute values.
-     * @param key The key used to retrieve the value from the map.
-     * @return The string value associated with the given key, or null if the key is not present in the map.
-     */
-    default String getStringValueFromAttributesMap(Map<String, AttributeValue> attributesMap, String key) {
-        return attributesMap.containsKey(key) ? attributesMap.get(key).s() : null;
+    default String getAttributeValue(Map<String, AttributeValue> item, String attributeName) {
+        if (item == null) {
+            return null;
+        }
+        AttributeValue attr = item.get(attributeName);
+        return attr != null ? attr.s() : null;
     }
 
-    /**
-     * Retrieves the CityStatus enum value from the attribute map based on the specified column name.
-     *
-     * @param itemAttributesMap A map containing attribute values of a City object. The keys represent the column names of the City table, and the values represent the corresponding
-     *  attribute values.
-     * @return The CityStatus enum value retrieved from the attributes map.
-     */
-    default CityStatus getStatusEnumFromAttributesMap(Map<String, AttributeValue> itemAttributesMap) {
-        return CityStatus.valueOf(this.getStringValueFromAttributesMap(itemAttributesMap, City.STATUS_COLUMN_NAME));
+    @Named("mapCommonAttributes")
+    default CommonAttributes mapCommonAttributes(Map<String, AttributeValue> item) {
+        if (item == null) {
+            return null;
+        }
+        return new CommonAttributes(
+            this.getAttributeValue(item, "name"),
+            this.getAttributeValue(item, "description"),
+            this.getEnumValue(item, "status", RecordStatus.class)
+        );
     }
 
-    /**
-     * This method is an implementation of the `@AfterMapping` annotation and is used to perform additional operations after mapping a City object from a map of attribute values.
-     *
-     * @param city The City object that has been mapped.
-     * @param itemAttributesMap A map containing the attribute values of the City object. The keys represent the column names of the City table, and the values represent the corresponding
-     *  attribute values.
-     */
-    @AfterMapping
-    default void afterMapToCity(@MappingTarget City city, Map<String, AttributeValue> itemAttributesMap) {
-        LOGGER.debug("Mapped city", city);
+    @Named("mapMetadataAttributes")
+    default MetadataAttributes mapMetadataAttributes(Map<String, AttributeValue> item) {
+        if (item == null) {
+            return null;
+        }
+        return new MetadataAttributes(
+            this.getDateTimeValue(item, "createdAt"),
+            this.getDateTimeValue(item, "updatedAt")
+        );
     }
 
-    /**
-     * Performs additional operations after mapping a City object to a ReadCityResponse object.
-     *
-     * @param response The ReadCityResponse object after mapping.
-     * @param city The City object before mapping.
-     */
-    @AfterMapping
-    default void afterMapToResponse(@MappingTarget ReadCityResponse response, City city) {
-        LOGGER.debug("Mapped response", response);
+    default <T extends Enum<T>> T getEnumValue(Map<String, AttributeValue> item, String attributeName, Class<T> enumClass) {
+        String value = this.getAttributeValue(item, attributeName);
+        return value != null ? Enum.valueOf(enumClass, value) : null;
+    }
+
+    default ZonedDateTime getDateTimeValue(Map<String, AttributeValue> item, String attributeName) {
+        String dateTimeString = this.getAttributeValue(item, attributeName);
+        if (Objects.isNull(dateTimeString) || dateTimeString.isEmpty()) {
+            throw new CityException("Date time value cannot be null or empty in attribute: " + attributeName);
+        }
+        return DateTimeUtils.getZonedDateTimeUsingISO8601(dateTimeString);
     }
 }

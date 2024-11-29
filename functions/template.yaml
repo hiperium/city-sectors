@@ -19,15 +19,6 @@ Parameters:
       - Delete
     Description: 'Deletion policy for table/log resources. For Snapshot, you need to create a manual backup before deleting the stack to preserve the data.'
 
-  SpringProfile:
-    Type: String
-    Default: 'dev'
-    AllowedValues:
-      - dev
-      - qa
-      - prod
-    Description: 'Spring profile for the functions.'
-
   LogRetentionInDays:
     Type: Number
     Default: 7
@@ -48,21 +39,41 @@ Parameters:
       - ONE_HOUR
     Description: 'Anomaly detector evaluation frequency in minutes.'
 
+  CityTableName:
+    Type: String
+    Default: 'City'
+    Description: 'City table name.'
+
+  SpringProfile:
+    Type: String
+    Default: 'dev'
+    AllowedValues:
+      - dev
+      - qa
+      - load
+      - preview
+      - prod
+    Description: 'Spring profile for the functions.'
+
 Resources:
-  CitiesTable:
+  CityTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: 'Cities'
+      TableName: !Ref CityTableName
       AttributeDefinitions:
-        - AttributeName: 'id'
+        - AttributeName: 'pk'
+          AttributeType: S
+        - AttributeName: 'sk'
           AttributeType: S
       KeySchema:
-        - AttributeName: 'id'
+        - AttributeName: 'pk'
           KeyType: HASH
+        - AttributeName: 'sk'
+          KeyType: RANGE
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 2
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
       SSESpecification:
         SSEEnabled: true
       PointInTimeRecoverySpecification:
@@ -89,9 +100,10 @@ Resources:
         LogGroup: !Ref ReadFunctionLogGroup
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref CitiesTable
+            TableName: !Ref CityTable
       Environment:
         Variables:
+          CITIES_TABLE_NAME: !Ref CityTable
           SPRING_PROFILES_ACTIVE: !Ref SpringProfile
     Metadata:
       BuildMethod: makefile
@@ -107,7 +119,7 @@ Resources:
 Outputs:
   CitiesTableArn:
     Description: "Cities DynamoDB table ARN."
-    Value: !GetAtt CitiesTable.Arn
+    Value: !GetAtt CityTable.Arn
 
   ReadFunctionArn:
     Description: "Read City Function ARN."

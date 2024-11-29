@@ -1,28 +1,37 @@
 {
-  "Cities": [
+  "City": [
     {
       "PutRequest": {
         "Item": {
-          "id": {
-            "S": "a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          "pk": {
+            "S": "CITY#b1fcd577-8f23-48d9-9364-f4e3df7b75d0"
+          },
+          "sk": {
+            "S": "CITY#b1fcd577-8f23-48d9-9364-f4e3df7b75d0"
           },
           "name": {
-            "S": "Hiperium City - Enabled"
+            "S": "Inactive City"
+          },
+          "description": {
+            "S": "Inactive city for testing purposes."
+          },
+          "language": {
+            "S": "es"
           },
           "countryCode": {
             "S": "EC"
           },
-          "status": {
-            "S": "ENABLED"
-          },
           "timezone": {
             "S": "America/Guayaquil"
           },
+          "status": {
+            "S": "INACTIVE"
+          },
           "createdAt": {
-            "S": "2024-05-08T15:00:00Z-05:00"
+            "S": "2024-01-01T00:00:00-05:00"
           },
           "updatedAt": {
-            "S": "2024-05-08T15:00:00Z-05:00"
+            "S": "2024-01-01T00:00:00-05:00"
           }
         }
       }
@@ -30,26 +39,320 @@
     {
       "PutRequest": {
         "Item": {
-          "id": {
-            "S": "a0ecb466-7ef5-47bf-a1ca-12f9f9328529"
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
           },
           "name": {
-            "S": "Hiperium City - Disabled"
+            "S": "Hiperium City"
           },
-          "countryCode": {
-            "S": "EC"
+          "description": {
+            "S": "An smart city with a lot of technology."
           },
           "status": {
-            "S": "DISABLED"
+            "S": "ACTIVE"
+          },
+          "languageCode": {
+            "S": "es"
+          },
+          "countryCode": {
+            "S": "ec"
           },
           "timezone": {
             "S": "America/Guayaquil"
           },
           "createdAt": {
-            "S": "2024-05-08T15:00:00Z-05:00"
+            "S": "2024-05-08T15:00:00-05:00"
           },
           "updatedAt": {
-            "S": "2024-05-08T15:00:00Z-05:00"
+            "S": "2024-05-08T15:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#001"
+          },
+          "name": {
+            "S": "Residential Zone"
+          },
+          "description": {
+            "S": "Main residential area with smart homes."
+          },
+          "status": {
+            "S": "ACTIVE"
+          },
+          "latitude": {
+            "N": "-2.170997"
+          },
+          "longitude": {
+            "N": "-78.467838"
+          },
+          "createdAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#002"
+          },
+          "name": {
+            "S": "Commercial District"
+          },
+          "description": {
+            "S": "Shopping and business area with IoT integration."
+          },
+          "status": {
+            "S": "ACTIVE"
+          },
+          "latitude": {
+            "N": "-0.180653"
+          },
+          "longitude": {
+            "N": "-78.467838"
+          },
+          "createdAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#003"
+          },
+          "name": {
+            "S": "Industrial Park"
+          },
+          "description": {
+            "S": "Smart industrial zone with automated manufacturing."
+          },
+          "status": {
+            "S": "ACTIVE"
+          },
+          "latitude": {
+            "N": "0.000001"
+          },
+          "longitude": {
+            "N": "-78.467838"
+          },
+          "createdAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#004"
+          },
+          "name": {
+            "S": "Green Area"
+          },
+          "latitude": {
+            "N": "-2.1720123"
+          },
+          "longitude": {
+            "N": "-79.9230456"
+          },
+          "status": {
+            "S": "ACTIVE"
+          },
+          "createdAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#005"
+          },
+          "name": {
+            "S": "Educational Zone"
+          },
+          "latitude": {
+            "N": "-2.1725789"
+          },
+          "longitude": {
+            "N": "-79.9235678"
+          },
+          "status": {
+            "S": "ACTIVE"
+          },
+          "createdAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#006"
+          },
+          "name": {
+            "S": "Healthcare Zone"
+          },
+          "latitude": {
+            "N": "-2.1725789"
+          },
+          "longitude": {
+            "N": "-79.9235678"
+          },
+          "status": {
+            "S": "ACTIVE"
+          },
+          "createdAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#007"
+          },
+          "name": {
+            "S": "Public Services Zone"
+          },
+          "latitude": {
+            "N": "-2.1725789"
+          },
+          "longitude": {
+            "N": "-79.9235678"
+          },
+          "status": {
+            "S": "ACTIVE"
+          },
+          "createdAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-01-01T00:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#100"
+          },
+          "name": {
+            "S": "Inactive Sector - 100"
+          },
+          "description": {
+            "S": "Main residential area with smart homes."
+          },
+          "status": {
+            "S": "INACTIVE"
+          },
+          "latitude": {
+            "N": "-2.170997"
+          },
+          "longitude": {
+            "N": "-78.467838"
+          },
+          "createdAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CITY#a0ecb466-7ef5-47bf-a1ca-12f9f9328528"
+          },
+          "sk": {
+            "S": "SECTOR#101"
+          },
+          "name": {
+            "S": "Inactive Sector - 101"
+          },
+          "description": {
+            "S": "Shopping and business area with IoT integration."
+          },
+          "status": {
+            "S": "INACTIVE"
+          },
+          "latitude": {
+            "N": "-0.180653"
+          },
+          "longitude": {
+            "N": "-78.467838"
+          },
+          "createdAt": {
+            "S": "2024-05-08T15:00:00-05:00"
+          },
+          "updatedAt": {
+            "S": "2024-05-08T15:00:00-05:00"
           }
         }
       }

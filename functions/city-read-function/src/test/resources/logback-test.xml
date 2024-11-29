@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="textAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd'T'HH:mm:ss'Z'XXX} %5p - %logger{34} : %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="textAppender"/>
+    </root>
+
+    <logger name="io.awspring.cloud" level="DEBUG"/>
+    <logger name="org.springframework.cloud.function.adapter.aws" level="DEBUG"/>
+
+    <springProfile name="test">
+        <springProperty scope="context" name="timezone" source="logging.hiperium.timezone" />
+        <springProperty scope="context" name="useCompactMode" source="logging.hiperium.useCompactMode" />
+        <springProperty scope="context" name="useFormattedTimestamps" source="logging.hiperium.useFormattedTimestamps" />
+
+        <appender name="jsonAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="hiperium.cities.commons.loggers.HiperiumLoggerLayout">
+                    <timezone>${timezone}</timezone>
+                    <useCompactMode>${useCompactMode}</useCompactMode>
+                    <useFormattedTimestamps>${useFormattedTimestamps}</useFormattedTimestamps>
+                </layout>
+            </encoder>
+        </appender>
+
+        <logger name="hiperium.cities.commons.utils.TestUtils" level="INFO" additivity="false">
+            <appender-ref ref="jsonAppender"/>
+        </logger>
+        <logger name="hiperium.city.read.function" level="DEBUG" additivity="false">
+            <appender-ref ref="jsonAppender"/>
+        </logger>
+    </springProfile>
+
+</configuration>
