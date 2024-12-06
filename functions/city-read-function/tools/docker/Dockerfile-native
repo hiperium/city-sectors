@@ -1,7 +1,7 @@
 #####################################################################################
 ############################# Stage 1: Builder Image ################################
 #####################################################################################
-FROM hiperium/native-image-builder:latest AS builder
+FROM hiperium/city-builder:latest AS builder
 WORKDIR /workspace
 
 COPY pom.xml        pom.xml
@@ -10,20 +10,16 @@ COPY src            src
 COPY tools/shell    tools/shell
 COPY tools/assembly tools/assembly
 
-RUN mvn -T 4C clean native:compile -Pnative -DskipTests -Ddependency-check.skip=true
+RUN mvn -T 4C clean native:compile -Pnative -DskipTests -Ddependency-check.skip=true  && \
+    mkdir -p target/extracted                                                         && \
+    unzip target/native-assembly.zip -d target/extracted
 
 #####################################################################################
 ############################ Stage 2: Application Image #############################
 #####################################################################################
 FROM public.ecr.aws/lambda/provided:al2023-arm64
-ARG APP_ROOT=/workspace
 
-COPY --from=builder ${APP_ROOT}/target/native               ${LAMBDA_TASK_ROOT}
-COPY --from=builder ${APP_ROOT}/tools/shell/bootstrap       ${LAMBDA_RUNTIME_DIR}
-COPY --from=builder ${APP_ROOT}/target/native-assembly.zip  /var/tmp/data-function-assembly.zip
-
-### Required to invoke the function correctly.
-RUN chmod +x ${LAMBDA_RUNTIME_DIR}/bootstrap
+COPY --from=builder /workspace/target/extracted ${LAMBDA_TASK_ROOT}
 
 EXPOSE 8080
 CMD [ "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest" ]

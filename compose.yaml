@@ -3,16 +3,14 @@ services:
   
   city-read-function:
     image: "hiperium/city-read-function:1.0.0"
-    container_name: "city-read-function"
+    container_name: "read-function"
     build:
       context: functions/city-read-function
-      dockerfile: tools/docker/Dockerfile-native
+      dockerfile: tools/docker/Dockerfile-jar
     ports:
       - "9000:8080"
     env_file:
       - utils/docker/lambda.env
-    volumes:
-      - cities-volume:/var/tmp
     networks:
       - "cities-network"
 
@@ -22,20 +20,15 @@ services:
     ports:
       - "4566:4566"
     env_file:
-      - utils/docker/localstack.env
+      - functions/city-read-function/tools/docker/localstack.env
     volumes:
-      - cities-volume:/var/tmp/city-data
       - /var/run/docker.sock:/var/run/docker.sock
       - ./functions/city-read-function/src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json
       - ./functions/city-read-function/src/test/resources/localstack/table-setup.sh:/etc/localstack/init/ready.d/1_table-setup.sh
-      - ./utils/docker/localstack/lambda-native-setup.sh:/etc/localstack/init/ready.d/2_lambda-setup.sh
     networks:
       - "cities-network"
     depends_on:
       - "city-read-function"
-
-volumes:
-  cities-volume:
 
 networks:
   cities-network:

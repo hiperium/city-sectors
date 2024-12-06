@@ -1,7 +1,7 @@
 package hiperium.city.read.function.repositories;
 
-import hiperium.cities.commons.enums.RecordStatus;
-import hiperium.cities.commons.exceptions.CityException;
+import hiperium.cities.common.enums.RecordStatus;
+import hiperium.cities.common.exceptions.CityException;
 import hiperium.city.read.function.entities.CityEntity;
 import hiperium.city.read.function.entities.SectorEntity;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * The CityRepository class is responsible for retrieving City objects from the DynamoDB table.
- *
+ * <p>
  * @apiNote The Enhanced Client has problems at runtime when used with Spring Native.
  * This is because the Enhanced Client uses reflection to create the DynamoDbAsyncClient.
  * The solution is to use the low-level client instead.

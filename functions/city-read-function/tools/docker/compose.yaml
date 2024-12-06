@@ -1,19 +1,19 @@
-name: "spring-cr"
+name: "cities"
 services:
 
   localstack:
     image: "localstack/localstack:latest"
-    container_name: "spring-cr-localstack"
+    container_name: "localstack"
     ports:
       - "4566:4566"
     env_file:
-      - spring.env
+      - localstack.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../../src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json
       - ../../src/test/resources/localstack/table-setup.sh:/etc/localstack/init/ready.d/table-setup.sh
     networks:
-      - "spring-cr-network"
+      - "city-read-network"
 
 networks:
-  spring-cr-network:
+  city-read-network:

@@ -1,37 +1,20 @@
 #####################################################################################
 ############################# Stage 1: Builder Image ################################
 #####################################################################################
-FROM amazoncorretto:21-alpine-jdk as builder
+FROM hiperium/city-builder:latest as builder
 WORKDIR /workspace
 
-### Maven - Verify latest version at: https://dlcdn.apache.org/maven/maven-3/
-ENV MAVEN_VERSION 3.9.8
-ENV MAVEN_HOME /usr/lib/mvn
-ENV PATH $MAVEN_HOME/bin:$PATH
-
-RUN apk add --no-cache zip unzip curl tar bash  && \
-    mkdir -p $MAVEN_HOME                        && \
-    curl -fsSL https://dlcdn.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz | tar xzf - -C $MAVEN_HOME --strip-components=1
-
-COPY pom.xml        pom.xml
+COPY pom.xml    pom.xml
 RUN  mvn dependency:go-offline -B
-COPY src            src
-COPY tools/assembly tools/assembly
+COPY src        src
 
-RUN mvn -T 4C clean package -DskipTests -Ddependency-check.skip=true    && \
-    mkdir -p target/extracted                                           && \
-    (cd target; unzip jar-assembly.zip -d extracted)                    && \
-    (cd target/layer-dependencies; zip -r ../layer-dependencies.zip .)
+RUN mvn -T 4C clean package -DskipTests -Ddependency-check.skip=true
 
 #####################################################################################
 ############################ Stage 2: Application Image #############################
 #####################################################################################
 FROM public.ecr.aws/lambda/java:21-arm64
-ARG TARGET=/workspace/target
 
-COPY --from=builder ${TARGET}/extracted                 ${LAMBDA_TASK_ROOT}
-COPY --from=builder ${TARGET}/*.jar                     /var/tmp/data-function.jar
-COPY --from=builder ${TARGET}/layer-dependencies.zip    /var/tmp/data-function-libs.zip
+COPY --from=builder /workspace/target/city-read-function-aws.jar ${LAMBDA_TASK_ROOT}
 
-EXPOSE 8080
 CMD [ "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest" ]

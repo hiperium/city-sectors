@@ -1,7 +1,7 @@
 package hiperium.city.read.function.repositories;
 
-import hiperium.cities.commons.enums.RecordStatus;
-import hiperium.cities.commons.utils.TestUtils;
+import hiperium.cities.common.enums.RecordStatus;
+import hiperium.cities.common.utils.TestUtils;
 import hiperium.city.read.function.FunctionApplication;
 import hiperium.city.read.function.common.TestContainersBase;
 import hiperium.city.read.function.entities.CityEntity;

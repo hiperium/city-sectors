@@ -1,6 +1,6 @@
 package hiperium.city.read.function.commons;
 
-import hiperium.cities.commons.enums.RecordStatus;
+import hiperium.cities.common.enums.RecordStatus;
 
 /**
  * Represents common attributes shared across different entities, such as name, description, and status.
@@ -12,7 +12,7 @@ import hiperium.cities.commons.enums.RecordStatus;
  * @param description a brief description of the entity
  * @param status the status of the entity indicating its current state
  */
-public record CommonAttributes(
+public record EntityCommon(
     String name,
     String description,
     RecordStatus status

@@ -12,7 +12,7 @@ cached = true
 parallel = false
 use_container = true
 beta_features = false
-build_image = ["hiperium/native-image-builder:latest"]
+build_image = ["hiperium/city-builder:latest"]
 
 [default.deploy.parameters]
 resolve_s3 = true

@@ -3,7 +3,7 @@
 This project contains source code and supports files for a serverless application that you can deploy with the SAM CLI.
 It includes the following files and folders.
 
-- **city-read-function** - Function that retrieves a city by its ID from a DynamoDB table.
+- **city-read-function** - Function that retrieves a city and sectors by the city ID.
 
 The application uses AWS resources like Lambda and DynamoDB.
 These resources are defined in the `template.yaml` file in the parent project.
@@ -18,22 +18,20 @@ Execute the following command to run the tests from the `project's root` directo
 mvn test -f functions/city-read-function/pom.xml
 ```
 
-
 ---
-## Deploying Lambda function Locally using IntelliJ.
+## Deploying using Spring Boot with Docker Compose plugin.
 Start the main class from the IDE to run the Lambda Function.
 The project uses the `local` Spring profile as default, so this profile configures the Docker Compose deployment 
 for the LocalStack environment:
 
 ```properties
 spring.docker.compose.enabled=true
-spring.docker.compose.start.log-level=debug
 spring.docker.compose.lifecycle-management=start_and_stop
 spring.docker.compose.file=functions/city-read-function/tools/spring/compose.yaml
 ```
 
-### Invoke Lambda function deployed with IntelliJ.
-Navigate to the `functions/city-read-function/src/test/http/compose.http` file, and execute the requests
+### Invoking Lambda function.
+Navigate to the `src/test/http/compose.http` file, and execute the requests
 to the deployed function.
 
 **NOTE:** The `local` profile is used only for local development and testing purposes.
@@ -41,14 +39,14 @@ The other Spring profiles don't have this feature disabled by default.
 
 
 ---
-## Deploying Lambda function using Docker Compose.
-To deploy the Lambda Function and LocalStack containers, use the following command from the `project's root` directory:
+## Deploying using Docker Compose.
+To deploy the Lambda Function and LocalStack containers, use the following command from the project's root directory:
 ```bash
 docker compose up --build
 ```
 
-### Invoke Lambda functions deployed with Docker Compose.
-Navigate to the `functions/city-read-function/src/test/http/compose.http` file, and execute the requests
+### Invoking Lambda function.
+Navigate to the `src/test/http/compose.http` file, and execute the requests
 to the deployed function.
 
 ### Getting records from DynamoDB.
@@ -96,7 +94,7 @@ sam logs --tail                     \
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
 
-### Invoke Lambda function.
+### Invoking Lambda function.
 To invoke the Lambda Function deployed in AWS, use the following command from the `functions` directory:
 ```bash
 aws lambda invoke                           \

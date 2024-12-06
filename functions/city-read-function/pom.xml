@@ -4,49 +4,40 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>city.hiperium</groupId>
-        <artifactId>cities-parent-pom</artifactId>
-        <version>1.0.12</version>
+        <artifactId>functions-parent-pom</artifactId>
+        <version>1.1.0</version>
         <relativePath/>
     </parent>
 
     <version>1.0.0</version>
     <artifactId>city-read-function</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Provides City data to services inside the Hiperium City project.</description>
+    <description>Provides City data inside in the Hiperium City project.</description>
 
     <properties>
-        <cities-commons.version>1.0.5</cities-commons.version>
+        <cities-common.version>1.1.0</cities-common.version>
         <start-class>hiperium.city.read.function.FunctionApplication</start-class>
     </properties>
 
     <dependencies>
-        <!-- Spring Cloud -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-function-webflux</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-function-adapter-aws</artifactId>
-        </dependency>
+        <!-- Spring Cloud DynamoDB -->
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-dynamodb</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <!-- Hiperium -->
         <dependency>
             <groupId>city.hiperium</groupId>
-            <artifactId>cities-commons</artifactId>
-            <version>${cities-commons.version}</version>
+            <artifactId>cities-common</artifactId>
+            <version>${cities-common.version}</version>
         </dependency>
-
         <!-- Utilities -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -55,98 +46,12 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
         </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>io.github.hakky54</groupId>
+            <artifactId>logcaptor</artifactId>
+            <version>2.10.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <!-- Dependencies directory for Lambda Layers. -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeScope>runtime</includeScope>
-                            <outputDirectory>${project.build.directory}/layer-dependencies/java/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>tools/assembly/jar.xml</descriptor>
-                    </descriptors>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <finalName>jar-assembly</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>jar-zip</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <inherited>false</inherited>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>native</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <imageName>native</imageName>
-                            <buildArgs>
-                                <buildArg>--enable-url-protocols=http,https</buildArg>
-                            </buildArgs>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>tools/assembly/native.xml</descriptor>
-                            </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <finalName>native-assembly</finalName>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>native-zip</id>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <inherited>false</inherited>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

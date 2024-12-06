@@ -1,11 +1,12 @@
 package hiperium.city.read.function.services;
 
-import hiperium.cities.commons.enums.RecordStatus;
-import hiperium.cities.commons.exceptions.InactiveCityException;
-import hiperium.cities.commons.exceptions.ResourceNotFoundException;
-import hiperium.cities.commons.utils.TestUtils;
+import hiperium.cities.common.enums.RecordStatus;
+import hiperium.cities.common.exceptions.InactiveCityException;
+import hiperium.cities.common.exceptions.ResourceNotFoundException;
+import hiperium.cities.common.utils.TestUtils;
 import hiperium.city.read.function.FunctionApplication;
 import hiperium.city.read.function.common.TestContainersBase;
+import hiperium.city.read.function.requests.FunctionRequest;
 import hiperium.city.read.function.utils.FunctionTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,14 +43,16 @@ public class CityServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find City by ID - Active")
     void givenCityId_whenFindActiveCity_mustReturnCityData() {
-        StepVerifier.create(this.cityService.findActiveCityById(FunctionTestUtils.ACTIVE_CITY_ID))
+        FunctionRequest functionRequest = new FunctionRequest(null, FunctionTestUtils.ACTIVE_CITY_ID);
+
+        StepVerifier.create(this.cityService.findActiveCityById(functionRequest))
             .assertNext(response -> {
                 assertNotNull(response);
-                assertNotNull(response.commonAttributes());
+                assertNotNull(response.entityCommon());
                 assertNotNull(response.countryCode());
                 assertNotNull(response.languageCode());
                 assertNotNull(response.timezone());
-                assertNotNull(response.metadataAttributes());
+                assertNotNull(response.entityMetadata());
             })
             .verifyComplete();
     }
@@ -57,7 +60,9 @@ public class CityServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find City by ID - Inactive")
     void givenCityId_whenFindInactiveCity_mustReturnCityData() {
-        StepVerifier.create(this.cityService.findActiveCityById(FunctionTestUtils.INACTIVE_CITY_ID))
+        FunctionRequest functionRequest = new FunctionRequest(null, FunctionTestUtils.INACTIVE_CITY_ID);
+
+        StepVerifier.create(this.cityService.findActiveCityById(functionRequest))
             .expectErrorMatches(throwable -> throwable instanceof InactiveCityException)
             .verify();
     }
@@ -65,7 +70,9 @@ public class CityServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find sectors by City ID - Active")
     void givenActiveCityId_whenFindSectors_mustReturnActiveSectorsData() {
-        StepVerifier.create(this.cityService.findActiveSectorsByCityId(FunctionTestUtils.ACTIVE_CITY_ID))
+        FunctionRequest functionRequest = new FunctionRequest(null, FunctionTestUtils.ACTIVE_CITY_ID);
+
+        StepVerifier.create(this.cityService.findActiveSectorsByCityId(functionRequest))
             .assertNext(response -> {
                 assertNotNull(response);
                 assertFalse(response.isEmpty());
@@ -73,7 +80,7 @@ public class CityServiceTest extends TestContainersBase {
 
                 // All returned sectors should be active.
                 response.forEach(sector ->
-                    assertEquals(RecordStatus.ACTIVE, sector.commonAttributes().status()));
+                    assertEquals(RecordStatus.ACTIVE, sector.entityCommon().status()));
             })
             .verifyComplete();
     }
@@ -81,7 +88,9 @@ public class CityServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find sectors by City ID - Inactive")
     void givenInactiveCityId_whenFindSectors_mustReturnError() {
-        StepVerifier.create(this.cityService.findActiveSectorsByCityId(FunctionTestUtils.INACTIVE_CITY_ID))
+        FunctionRequest functionRequest = new FunctionRequest(null, FunctionTestUtils.INACTIVE_CITY_ID);
+
+        StepVerifier.create(this.cityService.findActiveSectorsByCityId(functionRequest))
             .expectErrorMatches(throwable -> throwable instanceof InactiveCityException)
             .verify();
     }
@@ -89,8 +98,9 @@ public class CityServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find sectors by City ID - Non-existing")
     void givenNonExistingCityId_whenFindSectors_mustReturnError() {
-        String cityId = "non-existing-city-id";
-        StepVerifier.create(this.cityService.findActiveSectorsByCityId(cityId))
+        FunctionRequest functionRequest = new FunctionRequest(null, "non-existing-city-id");
+
+        StepVerifier.create(this.cityService.findActiveSectorsByCityId(functionRequest))
             .expectErrorMatches(throwable -> throwable instanceof ResourceNotFoundException)
             .verify();
     }

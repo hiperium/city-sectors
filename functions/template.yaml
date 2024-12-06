@@ -95,7 +95,7 @@ Resources:
       CodeUri: ./city-read-function
       FunctionName: 'city-read-function'
       Description: 'Read city data function.'
-      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+      Handler: 'org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest'
       LoggingConfig:
         LogGroup: !Ref ReadFunctionLogGroup
       Policies:

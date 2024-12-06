@@ -8,10 +8,10 @@
     <springProperty scope="context" name="useFormattedTimestamps" source="logging.hiperium.useFormattedTimestamps" />
 
     <appender name="textAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <charset>UTF-8</charset>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>TRACE</level>
         </filter>
-        <charset>UTF-8</charset>
         <encoder>
             <pattern>
                 %clr(%d{yyyy-MM-dd'T'HH:mm:ss'Z'XXX}){faint} %clr(%5p) %clr(-){faint} %clr(%-35.35logger{34}){cyan} %clr(:){faint} %m%n%wEx
@@ -21,7 +21,7 @@
 
     <appender name="jsonAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="hiperium.cities.commons.loggers.HiperiumLoggerLayout">
+            <layout class="hiperium.cities.common.loggers.HiperiumLoggerLayout">
                 <timezone>${timezone}</timezone>
                 <useCompactMode>${useCompactMode}</useCompactMode>
                 <useFormattedTimestamps>${useFormattedTimestamps}</useFormattedTimestamps>
@@ -35,15 +35,15 @@
 
     <springProfile name="local">
         <logger name="org.springframework.boot.docker.compose" level="DEBUG" />
-        <logger name="hiperium.cities.commons.loggers.HiperiumLoggerLayout" level="INFO" additivity="false" />
     </springProfile>
 
     <springProfile name="local | dev | qa">
+        <logger name="io.awspring.cloud" level="DEBUG"/>
+        <logger name="org.springframework.web" level="DEBUG"/>
+        <logger name="org.springframework.cloud.function.adapter.aws" level="DEBUG"/>
         <logger name="hiperium.city.read.function" level="DEBUG" additivity="false">
             <appender-ref ref="jsonAppender"/>
         </logger>
-        <logger name="io.awspring.cloud" level="DEBUG" />
-        <logger name="org.springframework.cloud.function.adapter.aws" level="DEBUG" />
     </springProfile>
 
     <springProfile name="load | preview | prod">

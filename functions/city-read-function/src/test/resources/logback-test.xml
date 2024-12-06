@@ -2,6 +2,10 @@
 <configuration>
 
     <appender name="textAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <charset>UTF-8</charset>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
         <encoder>
             <pattern>
                 %d{yyyy-MM-dd'T'HH:mm:ss'Z'XXX} %5p - %logger{34} : %m%n
@@ -14,6 +18,7 @@
     </root>
 
     <logger name="io.awspring.cloud" level="DEBUG"/>
+    <logger name="org.springframework.web" level="DEBUG"/>
     <logger name="org.springframework.cloud.function.adapter.aws" level="DEBUG"/>
 
     <springProfile name="test">
@@ -23,7 +28,7 @@
 
         <appender name="jsonAppender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="hiperium.cities.commons.loggers.HiperiumLoggerLayout">
+                <layout class="hiperium.cities.common.loggers.HiperiumLoggerLayout">
                     <timezone>${timezone}</timezone>
                     <useCompactMode>${useCompactMode}</useCompactMode>
                     <useFormattedTimestamps>${useFormattedTimestamps}</useFormattedTimestamps>
@@ -31,10 +36,10 @@
             </encoder>
         </appender>
 
-        <logger name="hiperium.cities.commons.utils.TestUtils" level="INFO" additivity="false">
+        <logger name="hiperium.city.read.function" level="DEBUG" additivity="false">
             <appender-ref ref="jsonAppender"/>
         </logger>
-        <logger name="hiperium.city.read.function" level="DEBUG" additivity="false">
+        <logger name="hiperium.cities.common.utils.TestUtils" level="INFO" additivity="false">
             <appender-ref ref="jsonAppender"/>
         </logger>
     </springProfile>
