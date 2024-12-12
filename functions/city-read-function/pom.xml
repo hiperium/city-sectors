@@ -15,11 +15,21 @@
     <description>Provides City data inside in the Hiperium City project.</description>
 
     <properties>
-        <cities-common.version>1.1.0</cities-common.version>
+        <functions-common.version>1.1.0</functions-common.version>
+        <functions-tests-utils.version>1.0.0</functions-tests-utils.version>
         <start-class>hiperium.city.read.function.FunctionApplication</start-class>
     </properties>
 
     <dependencies>
+        <!-- AWS Lambda -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-serialization</artifactId>
+        </dependency>
         <!-- Spring Cloud DynamoDB -->
         <dependency>
             <groupId>io.awspring.cloud</groupId>
@@ -34,8 +44,8 @@
         <!-- Hiperium -->
         <dependency>
             <groupId>city.hiperium</groupId>
-            <artifactId>cities-common</artifactId>
-            <version>${cities-common.version}</version>
+            <artifactId>functions-common</artifactId>
+            <version>${functions-common.version}</version>
         </dependency>
         <!-- Utilities -->
         <dependency>
@@ -48,10 +58,46 @@
         </dependency>
         <!-- Testing -->
         <dependency>
+            <groupId>city.hiperium</groupId>
+            <artifactId>functions-tests-utils</artifactId>
+            <version>${functions-tests-utils.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.github.hakky54</groupId>
             <artifactId>logcaptor</artifactId>
             <version>2.10.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <finalName>jar-assembly</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>tools/assembly/jar.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jar-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

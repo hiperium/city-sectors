@@ -19,7 +19,7 @@
 
     <logger name="io.awspring.cloud" level="DEBUG"/>
     <logger name="org.springframework.web" level="DEBUG"/>
-    <logger name="org.springframework.cloud.function.adapter.aws" level="DEBUG"/>
+    <logger name="org.springframework.cloud.function" level="DEBUG"/>
 
     <springProfile name="test">
         <springProperty scope="context" name="timezone" source="logging.hiperium.timezone" />
@@ -28,7 +28,7 @@
 
         <appender name="jsonAppender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="hiperium.cities.common.loggers.HiperiumLoggerLayout">
+                <layout class="hiperium.city.functions.common.loggers.HiperiumLoggerLayout">
                     <timezone>${timezone}</timezone>
                     <useCompactMode>${useCompactMode}</useCompactMode>
                     <useFormattedTimestamps>${useFormattedTimestamps}</useFormattedTimestamps>
@@ -39,9 +39,11 @@
         <logger name="hiperium.city.read.function" level="DEBUG" additivity="false">
             <appender-ref ref="jsonAppender"/>
         </logger>
-        <logger name="hiperium.cities.common.utils.TestUtils" level="INFO" additivity="false">
+        <logger name="hiperium.city.functions.tests.utils" level="INFO" additivity="false">
+            <appender-ref ref="jsonAppender"/>
+        </logger>
+        <logger name="hiperium.city.functions.common.utils" level="DEBUG" additivity="false">
             <appender-ref ref="jsonAppender"/>
         </logger>
     </springProfile>
-
 </configuration>

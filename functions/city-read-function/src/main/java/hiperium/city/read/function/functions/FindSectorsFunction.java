@@ -1,60 +1,50 @@
 package hiperium.city.read.function.functions;
 
-import hiperium.cities.common.loggers.HiperiumLogger;
-import hiperium.cities.common.responses.FunctionResponse;
-import hiperium.city.read.function.entities.SectorEntity;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import hiperium.city.functions.common.loggers.HiperiumLogger;
+import hiperium.city.functions.common.responses.FunctionResponse;
+import hiperium.city.read.function.services.SectorService;
 import hiperium.city.read.function.utils.ExceptionHandlerUtil;
-import hiperium.city.read.function.requests.FunctionRequest;
-import hiperium.city.read.function.services.CityService;
-import hiperium.city.read.function.utils.FunctionUtils;
-import org.springframework.http.HttpStatus;
+import hiperium.city.read.function.utils.UnmarshallUtils;
+import hiperium.city.read.function.utils.ValidationUtils;
 import org.springframework.messaging.Message;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
- * The FindSectorsFunction class is responsible for executing a function that locates
- * active sectors within a specified city by using a city ID. This class implements
- * the Function interface, which allows it to process messages containing city ID data
- * and produce a response encapsulating the result.
+ * The FindSectorsFunction class implements the Function interface, allowing it to process a message
+ * to find active city sectors by ID using the CityService. It handles deserialization and validation
+ * of the request, invokes a service call to retrieve the city sectors data, and returns a response wrapped
+ * in a reactive {@link Mono} stream.
  */
-public class FindSectorsFunction implements Function<Message<FunctionRequest>, Mono<FunctionResponse>> {
+@Component(FindSectorsFunction.FUNCTION_NAME)
+public class FindSectorsFunction implements Function<Message<APIGatewayProxyRequestEvent>, Mono<FunctionResponse>> {
 
+    public static final String FUNCTION_NAME = "findSectorsByCityId";
     private static final HiperiumLogger LOGGER = new HiperiumLogger(FindSectorsFunction.class);
 
-    private final CityService cityService;
+    private final SectorService sectorService;
 
-    /**
-     * Constructs a FindSectorsFunction instance with the given CityService.
-     *
-     * @param cityService the CityService used for retrieving sector data related to specific cities
-     */
-    public FindSectorsFunction(CityService cityService) {
-        this.cityService = cityService;
+    public FindSectorsFunction(SectorService sectorService) {
+        this.sectorService = sectorService;
     }
 
-    /**
-     * Applies the function to find active sectors by city ID from a given request message.
-     *
-     * @param requestMessage the message containing city ID information in a byte array format
-     * @return a {@link Mono} emitting a {@link FunctionResponse} containing the list of active sectors associated
-     *         with the specified city and an HTTP status code, or an error if the process fails
-     */
     @Override
-    public Mono<FunctionResponse> apply(Message<FunctionRequest> requestMessage) {
-        LOGGER.debug("Finding active sectors by city ID: {}", requestMessage.getPayload().cityId());
-        return FunctionUtils.validateRequest(requestMessage.getPayload())
-            .then(this.cityService.findActiveSectorsByCityId(requestMessage.getPayload()))
-            .map(this::generateResponse)
-            .onErrorResume(ExceptionHandlerUtil::handleException);
-    }
+    public Mono<FunctionResponse> apply(Message<APIGatewayProxyRequestEvent> requestMessage) {
+        LOGGER.debug("Processing request to find sectors by city ID: {}", requestMessage.getPayload());
 
-    private FunctionResponse generateResponse(List<SectorEntity> sectorEntity) {
-        return new FunctionResponse.Builder()
-            .withStatusCode(HttpStatus.OK.value())
-            .withBody(sectorEntity)
-            .build();
+        return Mono.just(UnmarshallUtils.deserializeRequest(requestMessage.getPayload()))
+            .doOnNext(cityDataRequest ->
+                ValidationUtils.validateRequest(
+                    cityDataRequest,
+                    requestMessage.getPayload().getRequestContext().getRequestId()))
+            .flatMap(cityDataRequest ->
+                this.sectorService.findActiveSectorsByCityId(
+                    cityDataRequest,
+                    requestMessage.getPayload().getRequestContext().getRequestId()))
+            .map(FunctionResponse::success)
+            .onErrorResume(ExceptionHandlerUtil::handleException);
     }
 }

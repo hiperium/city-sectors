@@ -1,8 +1,9 @@
 package hiperium.city.read.function.mappers;
 
-import hiperium.cities.common.enums.RecordStatus;
-import hiperium.cities.common.exceptions.CityException;
-import hiperium.cities.common.utils.DateTimeUtils;
+import hiperium.city.functions.common.enums.ErrorCode;
+import hiperium.city.functions.common.enums.RecordStatus;
+import hiperium.city.functions.common.exceptions.CityException;
+import hiperium.city.functions.common.utils.DateTimeUtils;
 import hiperium.city.read.function.commons.EntityCommon;
 import hiperium.city.read.function.commons.EntityMetadata;
 import hiperium.city.read.function.entities.CityEntity;
@@ -21,7 +22,7 @@ import java.util.Objects;
  * Uses MapStruct for mapping configuration and Spring for component modeling.
  */
 @Mapper(componentModel = "spring")
-public interface CityMapper {
+public interface FunctionMapper {
 
     /**
      * Maps the provided data from a map of attribute values to a CityEntity object, extracting specific
@@ -140,7 +141,8 @@ public interface CityMapper {
     default ZonedDateTime getDateTimeValue(Map<String, AttributeValue> item, String attributeName) {
         String dateTimeString = this.getAttributeValue(item, attributeName);
         if (Objects.isNull(dateTimeString) || dateTimeString.isEmpty()) {
-            throw new CityException("Date time value cannot be null or empty in attribute: " + attributeName);
+            throw new CityException("Date time value cannot be null or empty in attribute: " + attributeName,
+                ErrorCode.INTERNAL_002);
         }
         return DateTimeUtils.getZonedDateTimeUsingISO8601(dateTimeString);
     }

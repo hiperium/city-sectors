@@ -1,14 +1,14 @@
 package hiperium.city.read.function.functions;
 
-import hiperium.cities.common.loggers.HiperiumLogger;
-import hiperium.cities.common.responses.FunctionResponse;
-import hiperium.city.read.function.entities.CityEntity;
-import hiperium.city.read.function.utils.ExceptionHandlerUtil;
-import hiperium.city.read.function.requests.FunctionRequest;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import hiperium.city.functions.common.loggers.HiperiumLogger;
+import hiperium.city.functions.common.responses.FunctionResponse;
 import hiperium.city.read.function.services.CityService;
-import hiperium.city.read.function.utils.FunctionUtils;
-import org.springframework.http.HttpStatus;
+import hiperium.city.read.function.utils.ExceptionHandlerUtil;
+import hiperium.city.read.function.utils.UnmarshallUtils;
+import hiperium.city.read.function.utils.ValidationUtils;
 import org.springframework.messaging.Message;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
@@ -19,42 +19,32 @@ import java.util.function.Function;
  * of the request, invokes a service call to retrieve the city data, and returns a response wrapped
  * in a reactive {@link Mono} stream.
  */
-public class FindCityFunction implements Function<Message<FunctionRequest>, Mono<FunctionResponse>> {
+@Component(FindCityFunction.FUNCTION_NAME)
+public class FindCityFunction implements Function<Message<APIGatewayProxyRequestEvent>, Mono<FunctionResponse>> {
 
+    public static final String FUNCTION_NAME = "findCityById";
     private static final HiperiumLogger LOGGER = new HiperiumLogger(FindCityFunction.class);
 
     private final CityService cityService;
 
-    /**
-     * Creates an instance of FindCityFunction using the specified CityService.
-     *
-     * @param cityService the service responsible for city-related operations, particularly retrieving
-     *                    city data required by the function
-     */
     public FindCityFunction(CityService cityService) {
         this.cityService = cityService;
     }
 
-    /**
-     * Applies the function to find an active city by its ID from a given request message.
-     *
-     * @param requestMessage the message containing the city ID to be processed
-     * @return a {@link Mono} emitting a {@link FunctionResponse} containing the city data and an HTTP status code,
-     *         or completing with an error if the process fails
-     */
     @Override
-    public Mono<FunctionResponse> apply(Message<FunctionRequest> requestMessage) {
-        LOGGER.debug("Finding city by ID: {}", requestMessage.getPayload().cityId());
-        return FunctionUtils.validateRequest(requestMessage.getPayload())
-            .then(this.cityService.findActiveCityById(requestMessage.getPayload()))
-            .map(this::buildCityResponse)
-            .onErrorResume(ExceptionHandlerUtil::handleException);
-    }
+    public Mono<FunctionResponse> apply(Message<APIGatewayProxyRequestEvent> requestMessage) {
+        LOGGER.debug("Processing request to find city by ID: {}", requestMessage.getPayload());
 
-    private FunctionResponse buildCityResponse(CityEntity cityEntity) {
-        return new FunctionResponse.Builder()
-            .withStatusCode(HttpStatus.OK.value())
-            .withBody(cityEntity)
-            .build();
+        return Mono.just(UnmarshallUtils.deserializeRequest(requestMessage.getPayload()))
+            .doOnNext(cityDataRequest ->
+                ValidationUtils.validateRequest(
+                    cityDataRequest,
+                    requestMessage.getPayload().getRequestContext().getRequestId()))
+            .flatMap(cityDataRequest ->
+                this.cityService.findActiveCityById(
+                    cityDataRequest,
+                    requestMessage.getPayload().getRequestContext().getRequestId()))
+            .map(FunctionResponse::success)
+            .onErrorResume(ExceptionHandlerUtil::handleException);
     }
 }

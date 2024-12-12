@@ -1,8 +1,10 @@
 package hiperium.city.read.function.repositories;
 
 import hiperium.city.functions.common.enums.ErrorCode;
+import hiperium.city.functions.common.enums.RecordStatus;
 import hiperium.city.functions.common.exceptions.CityException;
 import hiperium.city.read.function.entities.CityEntity;
+import hiperium.city.read.function.entities.SectorEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -17,51 +19,63 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The CityRepository class is responsible for retrieving City objects from the DynamoDB table.
+ * The SectorRepository class is responsible for retrieving City Sector objects from the DynamoDB table.
  * <p>
  * @apiNote The Enhanced Client has problems at runtime when used with Spring Native.
  * This is because the Enhanced Client uses reflection to create the DynamoDbAsyncClient.
  * The solution is to use the low-level client instead.
  */
 @Repository
-public class CityRepository {
+public class SectorRepository {
 
     private final String tableName;
     private final DynamoDbClient dynamoDbClient;
 
-    public CityRepository(@Value("${cities.table.name}") String tableName, DynamoDbClient dynamoDbClient) {
+    public SectorRepository(@Value("${cities.table.name}") String tableName, DynamoDbClient dynamoDbClient) {
         this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
     }
 
     /**
-     * Retrieves a city's data from the DynamoDB table using the specified city ID. The method uses
-     * a key condition expression to query the database with the provided city ID.
+     * Finds sectors by city ID and status from the DynamoDB table.
+     * The method queries the sectors associated with the specified city ID
+     * and filters them based on the given status.
      *
-     * @param cityId    the ID of the city to be retrieved. It is used to form the partition key
-     *                  for querying the database.
+     * @param cityId    the ID of the city used to match sectors.
+     * @param status    the status used to filter the sectors.
      * @param requestId the unique identifier of the request for tracking purposes.
-     * @return a {@link Mono} that emits the {@link QueryResponse} containing items related to the specified city ID,
-     * or an error if the data retrieval fails.
+     * @return a {@link Mono} that emits a {@link QueryResponse} containing the sectors
+     * that match the city ID and status, or an error if the query fails.
      */
-    public Mono<QueryResponse> findByCityId(final String cityId, final String requestId) {
+    public Mono<QueryResponse> findSectorsByCityAndStatus(final String cityId,
+                                                          final RecordStatus status,
+                                                          final String requestId) {
+
+        Map<String, String> expressionAttributeNames = new HashMap<>();
+        expressionAttributeNames.put("#status", "status"); // status is a reserved word in DynamoDB.
+
         Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
         expressionAttributeValues.put(":pkValue", AttributeValue.builder()
             .s(CityEntity.CITY_PK_PREFIX + cityId)
             .build());
-        expressionAttributeValues.put(":skValue", AttributeValue.builder()
-            .s(CityEntity.CITY_PK_PREFIX + cityId)
+        expressionAttributeValues.put(":sectorPrefixValue", AttributeValue.builder()
+            .s(SectorEntity.SECTOR_SK_PREFIX)
+            .build());
+        expressionAttributeValues.put(":statusValue", AttributeValue.builder()
+            .s(status.getValue())
             .build());
 
         QueryRequest request = QueryRequest.builder()
             .tableName(this.tableName)
-            .keyConditionExpression("pk = :pkValue and sk = :skValue")
+            .keyConditionExpression("pk = :pkValue AND begins_with(sk, :sectorPrefixValue)")
+            .filterExpression("#status = :statusValue")
+            .expressionAttributeNames(expressionAttributeNames)
             .expressionAttributeValues(expressionAttributeValues)
             .build();
 
         return Mono.fromCallable(() -> this.dynamoDbClient.query(request))
             .onErrorMap(DynamoDbException.class, exception ->
-                new CityException("Error when retrieving city data with ID: " + cityId,
+                new CityException("Error when querying sectors by city ID: " + cityId,
                     ErrorCode.INTERNAL_001, requestId, exception))
             .subscribeOn(Schedulers.boundedElastic());
     }

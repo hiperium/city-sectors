@@ -1,7 +1,7 @@
-name: "cities"
+name: "hiperium-cities"
 services:
 
-  localstack:
+  cities-localstack:
     image: "localstack/localstack:latest"
     container_name: "localstack"
     ports:

@@ -1,6 +1,6 @@
 package hiperium.city.read.function.configurations;
 
-import hiperium.cities.common.loggers.HiperiumLogger;
+import hiperium.city.functions.common.loggers.HiperiumLogger;
 import org.springframework.cloud.function.context.DefaultMessageRoutingHandler;
 import org.springframework.messaging.Message;
 

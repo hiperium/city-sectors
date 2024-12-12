@@ -1,6 +1,6 @@
 package hiperium.city.read.function.commons;
 
-import hiperium.cities.common.enums.RecordStatus;
+import hiperium.city.functions.common.enums.RecordStatus;
 
 /**
  * Represents common attributes shared across different entities, such as name, description, and status.

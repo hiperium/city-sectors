@@ -6,7 +6,7 @@ services:
     container_name: "read-function"
     build:
       context: functions/city-read-function
-      dockerfile: tools/docker/Dockerfile-jar
+      dockerfile: tools/docker/Dockerfile
     ports:
       - "9000:8080"
     env_file:
@@ -16,7 +16,7 @@ services:
 
   cities-localstack:
     image: "localstack/localstack:latest"
-    container_name: "cities-localstack"
+    container_name: "localstack"
     ports:
       - "4566:4566"
     env_file:
