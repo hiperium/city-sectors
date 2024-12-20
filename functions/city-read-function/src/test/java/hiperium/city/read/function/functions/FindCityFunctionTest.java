@@ -1,9 +1,9 @@
 package hiperium.city.read.function.functions;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import hiperium.city.functions.common.responses.FunctionResponse;
-import hiperium.city.functions.tests.utils.DynamoDbTableTest;
-import hiperium.city.functions.tests.utils.EventDeserializerTest;
+import hiperium.city.functions.common.requests.FunctionRequest;
+import hiperium.city.functions.common.utils.DeserializerUtil;
+import hiperium.city.functions.common.utils.ResponseUtil;
+import hiperium.city.functions.tests.utils.DynamoDbTableUtil;
 import hiperium.city.read.function.FunctionApplication;
 import hiperium.city.read.function.common.TestContainersBase;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,7 @@ import org.springframework.cloud.function.context.FunctionCatalog;
 import org.springframework.cloud.function.context.test.FunctionalSpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.converter.MessageConverter;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import reactor.core.publisher.Mono;
@@ -40,17 +40,14 @@ class FindCityFunctionTest extends TestContainersBase {
     private DynamoDbClient dynamoDbClient;
 
     @Autowired
-    private MessageConverter messageConverter;
-
-    @Autowired
     private FunctionCatalog functionCatalog;
 
-    @Value("${cities.table.name}")
+    @Value("${city.table}")
     private String tableName;
 
     @BeforeEach
     void init() {
-        DynamoDbTableTest.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
+        DynamoDbTableUtil.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
     }
 
     @Test
@@ -59,19 +56,23 @@ class FindCityFunctionTest extends TestContainersBase {
         String jsonContent = this.getJsonFromFilePath("requests/city/valid/find-city-by-id-request.json");
         assertThat(jsonContent).isNotNull();
 
-        Message<APIGatewayProxyRequestEvent> eventMessage = EventDeserializerTest
-            .deserializeRequestEvent(jsonContent, this.messageConverter);
-        assertThat(eventMessage).isNotNull();
+        FunctionRequest functionRequest = DeserializerUtil.fromJson(jsonContent);
+        assertThat(functionRequest).isNotNull();
 
         // Find the corresponding function by name.
-        Function<Message<APIGatewayProxyRequestEvent>, Mono<FunctionResponse>> function = this.findFunctionUnderTest();
+        Function<Message<FunctionRequest>, Mono<Message<String>>> function = this.findFunctionUnderTest();
         assertThat(function).isNotNull();
 
+        // Create a message with the request payload.
+        Message<FunctionRequest> message = MessageBuilder
+            .withPayload(functionRequest)
+            .build();
+
         // Execute the function and verify the response.
-        StepVerifier.create(function.apply(eventMessage))
+        StepVerifier.create(function.apply(message))
             .assertNext(response -> {
                 assertThat(response).isNotNull();
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertThat(response.getHeaders().get(ResponseUtil.LAMBDA_STATUS_CODE)).isEqualTo(HttpStatus.OK.value());
             })
             .verifyComplete();
     }
@@ -87,27 +88,30 @@ class FindCityFunctionTest extends TestContainersBase {
         String jsonContent = this.getJsonFromFilePath(jsonFilePath);
         assertThat(jsonContent).isNotNull();
 
-        Message<APIGatewayProxyRequestEvent> eventMessage = EventDeserializerTest
-            .deserializeRequestEvent(jsonContent, this.messageConverter);
-        assertThat(eventMessage).isNotNull();
+        FunctionRequest functionRequest = DeserializerUtil.fromJson(jsonContent);
+        assertThat(functionRequest).isNotNull();
 
         // Find the corresponding function by name.
-        Function<Message<APIGatewayProxyRequestEvent>, Mono<FunctionResponse>> function =
-            this.findFunctionUnderTest();
+        Function<Message<FunctionRequest>, Mono<Message<String>>> function = this.findFunctionUnderTest();
         assertThat(function).isNotNull();
 
+        // Create a message with the request payload.
+        Message<FunctionRequest> message = MessageBuilder
+            .withPayload(functionRequest)
+            .build();
+
         // Execute the function and verify the response.
-        StepVerifier.create(function.apply(eventMessage))
+        StepVerifier.create(function.apply(message))
             .assertNext(response -> {
                 assertThat(response).isNotNull();
-                assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
-                int errorCode = response.statusCode();
+                assertThat(response.getHeaders().get(ResponseUtil.LAMBDA_STATUS_CODE)).isNotNull();
+                int errorCode = (int) Objects.requireNonNull(response.getHeaders().get(ResponseUtil.LAMBDA_STATUS_CODE));
                 assertThat(errorCode >= HttpStatus.OK.value() && errorCode <= HttpStatus.IM_USED.value()).isFalse();
             })
             .verifyComplete();
     }
 
-    private Function<Message<APIGatewayProxyRequestEvent>, Mono<FunctionResponse>> findFunctionUnderTest() {
+    private Function<Message<FunctionRequest>, Mono<Message<String>>> findFunctionUnderTest() {
         return this.functionCatalog.lookup(Function.class, FindCityFunction.FUNCTION_NAME);
     }
 

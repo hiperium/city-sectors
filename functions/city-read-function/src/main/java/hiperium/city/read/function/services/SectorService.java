@@ -2,6 +2,7 @@ package hiperium.city.read.function.services;
 
 import hiperium.city.functions.common.enums.RecordStatus;
 import hiperium.city.functions.common.exceptions.InactiveCityException;
+import hiperium.city.read.function.commons.TimeZoneProvider;
 import hiperium.city.read.function.entities.SectorEntity;
 import hiperium.city.read.function.mappers.FunctionMapper;
 import hiperium.city.read.function.repositories.SectorRepository;
@@ -19,14 +20,17 @@ import java.util.stream.Collectors;
 @Service
 public class SectorService {
 
-    private final FunctionMapper functionMapper;
     private final CityService cityService;
+    private final FunctionMapper functionMapper;
     private final SectorRepository sectorRepository;
+    private final TimeZoneProvider timeZoneProvider;
 
-    public SectorService(FunctionMapper functionMapper, CityService cityService, SectorRepository sectorRepository) {
-        this.functionMapper = functionMapper;
+    public SectorService(CityService cityService, FunctionMapper functionMapper,
+                         SectorRepository sectorRepository, TimeZoneProvider timeZoneProvider) {
         this.cityService = cityService;
+        this.functionMapper = functionMapper;
         this.sectorRepository = sectorRepository;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -34,26 +38,26 @@ public class SectorService {
      * This method ensures that only sectors belonging to an active city are processed.
      *
      * @param cityDataRequest   the unique identifier of the city for which active sectors are to be found.
-     * @param requestId         the unique identifier of the cityDataRequest for tracking purposes.
      * @return a {@code Mono} containing a list of active {@code SectorEntity} instances if the city is active,
      *         or an error if the city record is inactive or the search fails.
      */
-    public Mono<List<SectorEntity>> findActiveSectorsByCityId(final CityDataRequest cityDataRequest,
-                                                              final String requestId) {
-        return this.cityService.findActiveCityById(cityDataRequest, requestId)
+    public Mono<List<SectorEntity>> findActiveSectorsByCityId(final CityDataRequest cityDataRequest) {
+        return this.cityService.findActiveCityById(cityDataRequest)
             .flatMap(cityEntity -> {
                 if (RecordStatus.ACTIVE.equals(cityEntity.entityCommon().status())) {
                     return this.sectorRepository.findSectorsByCityAndStatus(
-                            cityDataRequest.cityId(),
+                            cityDataRequest.cityIdRequest().cityId(),
                             RecordStatus.ACTIVE,
-                            requestId)
+                            cityDataRequest.requestId())
                         .map(response -> response.items().stream()
-                            .map(this.functionMapper::mapSectorsDataResponse)
+                            .map(item ->
+                                this.functionMapper.mapSectorsDataResponse(item, this.timeZoneProvider))
                             .collect(Collectors.toList()));
                 } else {
                     return Mono.error(
-                        new InactiveCityException("Cannot perform operations on an Inactive city: " + cityDataRequest.cityId(),
-                            requestId));
+                        new InactiveCityException("Cannot perform operations on an Inactive city: " +
+                            cityDataRequest.cityIdRequest().cityId(),
+                            cityDataRequest.requestId()));
                 }
             });
     }

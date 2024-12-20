@@ -5,7 +5,7 @@
     <parent>
         <groupId>city.hiperium</groupId>
         <artifactId>functions-parent-pom</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <relativePath/>
     </parent>
 
@@ -15,22 +15,13 @@
     <description>Provides City data inside in the Hiperium City project.</description>
 
     <properties>
-        <functions-common.version>1.1.0</functions-common.version>
+        <functions-common.version>1.0.0</functions-common.version>
         <functions-tests-utils.version>1.0.0</functions-tests-utils.version>
         <start-class>hiperium.city.read.function.FunctionApplication</start-class>
     </properties>
 
     <dependencies>
-        <!-- AWS Lambda -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-events</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-serialization</artifactId>
-        </dependency>
-        <!-- Spring Cloud DynamoDB -->
+        <!-- Spring Cloud AWS DynamoDB -->
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-dynamodb</artifactId>
@@ -41,13 +32,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Hiperium -->
+        <!-- Utilities -->
         <dependency>
             <groupId>city.hiperium</groupId>
             <artifactId>functions-common</artifactId>
             <version>${functions-common.version}</version>
         </dependency>
-        <!-- Utilities -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -75,26 +65,27 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <finalName>jar-assembly</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>tools/assembly/jar.xml</descriptor>
-                    </descriptors>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>jar-assembly</id>
+                        <id>java-assembly</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <inherited>false</inherited>
+                        <configuration>
+                            <finalName>function</finalName>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>tools/assembly/java.xml</descriptor>
+                            </descriptors>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${start-class}</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

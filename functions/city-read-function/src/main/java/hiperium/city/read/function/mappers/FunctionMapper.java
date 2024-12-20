@@ -3,11 +3,13 @@ package hiperium.city.read.function.mappers;
 import hiperium.city.functions.common.enums.ErrorCode;
 import hiperium.city.functions.common.enums.RecordStatus;
 import hiperium.city.functions.common.exceptions.CityException;
-import hiperium.city.functions.common.utils.DateTimeUtils;
+import hiperium.city.functions.common.utils.DateTimeUtil;
 import hiperium.city.read.function.commons.EntityCommon;
 import hiperium.city.read.function.commons.EntityMetadata;
+import hiperium.city.read.function.commons.TimeZoneProvider;
 import hiperium.city.read.function.entities.CityEntity;
 import hiperium.city.read.function.entities.SectorEntity;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -38,8 +40,8 @@ public interface FunctionMapper {
     @Mapping(target = "timezone",       expression = "java(getAttributeValue(item, \"timezone\"))")
     @Mapping(target = "languageCode",   expression = "java(getAttributeValue(item, \"languageCode\"))")
     @Mapping(target = "countryCode",    expression = "java(getAttributeValue(item, \"countryCode\"))")
-    @Mapping(target = "entityMetadata", expression = "java(mapMetadataAttributes(item))")
-    CityEntity mapCityDataResponse(Map<String, AttributeValue> item);
+    @Mapping(target = "entityMetadata", expression = "java(mapMetadataAttributes(item, timeZoneProvider))")
+    CityEntity mapCityDataResponse(Map<String, AttributeValue> item, @Context TimeZoneProvider timeZoneProvider);
 
     /**
      * Maps a data response from a map of attributes to a SectorEntity object. The mapping extracts
@@ -54,8 +56,8 @@ public interface FunctionMapper {
     @Mapping(target = "entityCommon",   expression = "java(mapCommonAttributes(item))")
     @Mapping(target = "latitude",       expression = "java(getAttributeValue(item, \"latitude\"))")
     @Mapping(target = "longitude",      expression = "java(getAttributeValue(item, \"longitude\"))")
-    @Mapping(target = "entityMetadata", expression = "java(mapMetadataAttributes(item))")
-    SectorEntity mapSectorsDataResponse(Map<String, AttributeValue> item);
+    @Mapping(target = "entityMetadata", expression = "java(mapMetadataAttributes(item, timeZoneProvider))")
+    SectorEntity mapSectorsDataResponse(Map<String, AttributeValue> item, @Context TimeZoneProvider timeZoneProvider);
 
     /**
      * Retrieves the string value of a specified attribute from a given map of attribute names to attribute values.
@@ -99,18 +101,20 @@ public interface FunctionMapper {
      *
      * @param item a map containing attribute names as keys and their respective values
      *             encapsulated in AttributeValue objects; expected to include metadata
-     *             attributes such as "createdAt" and "updatedAt"
+     *             attributes such as "createdAt" and "updatedAt".
+     * @param timeZoneProvider the provider for the city's timezone.
      * @return an EntityMetadata object populated with the retrieved creation and update
      *         timestamps from the provided map, or null if the input map is null
      */
     @Named("mapMetadataAttributes")
-    default EntityMetadata mapMetadataAttributes(Map<String, AttributeValue> item) {
+    default EntityMetadata mapMetadataAttributes(final Map<String, AttributeValue> item,
+                                                 final TimeZoneProvider timeZoneProvider) {
         if (item == null) {
             return null;
         }
         return new EntityMetadata(
-            this.getDateTimeValue(item, "createdAt"),
-            this.getDateTimeValue(item, "updatedAt")
+            this.getDateTimeValue(item, "createdAt", timeZoneProvider),
+            this.getDateTimeValue(item, "updatedAt", timeZoneProvider)
         );
     }
 
@@ -118,13 +122,15 @@ public interface FunctionMapper {
      * Retrieves the value of a specified attribute from the provided map and converts it to an Enum constant
      * of the specified enum class type.
      *
-     * @param item the map containing attribute names and their corresponding values
+     * @param item          the map containing attribute names and their corresponding values
      * @param attributeName the name of the attribute whose value is to be retrieved and converted to an enum
-     * @param enumClass the class of the enumeration to which the attribute value will be converted
+     * @param enumClass     the class of the enumeration to which the attribute value will be converted
      * @param <T> the type of the enumeration
      * @return the enum constant corresponding to the attribute value, or null if the value is not present
      */
-    default <T extends Enum<T>> T getEnumValue(Map<String, AttributeValue> item, String attributeName, Class<T> enumClass) {
+    default <T extends Enum<T>> T getEnumValue(final Map<String, AttributeValue> item,
+                                               final String attributeName,
+                                               final Class<T> enumClass) {
         String value = this.getAttributeValue(item, attributeName);
         return value != null ? Enum.valueOf(enumClass, value) : null;
     }
@@ -133,17 +139,20 @@ public interface FunctionMapper {
      * Retrieves the ZonedDateTime value from a map of attributes based on the specified attribute name.
      * This method expects the corresponding value to be in ISO 8601 format.
      *
-     * @param item the map of attributes containing the desired date-time value
-     * @param attributeName the name of the attribute within the map from which to extract the date-time value
+     * @param item             the map of attributes containing the desired date-time value
+     * @param attributeName    the name of the attribute within the map from which to extract the date-time value
+     * @param timeZoneProvider the provider for the city's timezone
      * @return the parsed ZonedDateTime object from the specified attribute
      * @throws CityException if the date-time value is null or empty in the specified attribute
      */
-    default ZonedDateTime getDateTimeValue(Map<String, AttributeValue> item, String attributeName) {
+    default ZonedDateTime getDateTimeValue(final Map<String, AttributeValue> item,
+                                           final String attributeName,
+                                           final TimeZoneProvider timeZoneProvider) {
         String dateTimeString = this.getAttributeValue(item, attributeName);
         if (Objects.isNull(dateTimeString) || dateTimeString.isEmpty()) {
             throw new CityException("Date time value cannot be null or empty in attribute: " + attributeName,
                 ErrorCode.INTERNAL_002);
         }
-        return DateTimeUtils.getZonedDateTimeUsingISO8601(dateTimeString);
+        return DateTimeUtil.getZonedDateTimeUsingISO8601(dateTimeString, timeZoneProvider.getCityTimeZone());
     }
 }

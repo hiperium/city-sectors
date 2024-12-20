@@ -1,40 +1,40 @@
 ### Valid Request
 POST http://localhost:9000/2015-03-31/functions/function/invocations
-Content-Type: application/json
+content-type: application/json
 
-< ../../resources/requests/city/valid/find-city-by-id-request.json
+< ../../resources/requests/city-sectors/valid/find-sectors-by-city-id-request.json
 
 
 ### Empty City ID
 POST http://localhost:9000/2015-03-31/functions/function/invocations
-Content-Type: application/json
+content-type: application/json
 
-< ../../resources/requests/city/non-valid/empty-city-id.json
+< ../../resources/requests/city-sectors/non-valid/empty-city-id.json
 
 
 ### Non-existing City ID
 POST http://localhost:9000/2015-03-31/functions/function/invocations
-Content-Type: application/json
+content-type: application/json
 
-< ../../resources/requests/city/non-valid/non-existing-city.json
+< ../../resources/requests/city-sectors/non-valid/non-existing-city.json
 
 
 ### Wrong City ID
 POST http://localhost:9000/2015-03-31/functions/function/invocations
-Content-Type: application/json
+content-type: application/json
 
-< ../../resources/requests/city/non-valid/wrong-city-id.json
+< ../../resources/requests/city-sectors/non-valid/wrong-city-id.json
 
 
 ### Empty Function Name
 POST http://localhost:9000/2015-03-31/functions/function/invocations
-Content-Type: application/json
+content-type: application/json
 
 < ../../resources/requests/common/non-valid/empty-function-name.json
 
 
 ### Wrong Payload
 POST http://localhost:9000/2015-03-31/functions/function/invocations
-Content-Type: application/json
+content-type: application/json
 
 < ../../resources/requests/common/non-valid/wrong-payload.json

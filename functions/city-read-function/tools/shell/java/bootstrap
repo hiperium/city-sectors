@@ -1,0 +1,5 @@
+#!/bin/sh
+
+java -agentlib:native-image-agent=config-output-dir="$AGENT_OUTPUT_DIR"  \
+     -cp .:"$(echo lib/*.jar | tr ' ' :)"                                \
+     "$MAIN_CLASS"

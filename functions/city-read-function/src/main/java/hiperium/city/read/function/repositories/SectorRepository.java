@@ -31,7 +31,7 @@ public class SectorRepository {
     private final String tableName;
     private final DynamoDbClient dynamoDbClient;
 
-    public SectorRepository(@Value("${cities.table.name}") String tableName, DynamoDbClient dynamoDbClient) {
+    public SectorRepository(@Value("${city.table}") String tableName, DynamoDbClient dynamoDbClient) {
         this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
     }

@@ -24,16 +24,15 @@ public final class ValidationUtils {
      * is thrown with details about the first encountered violation.
      *
      * @param dataRequest the CityDataRequest object to be validated
-     * @param requestId the unique identifier for the current request, used for logging or error handling
      * @throws ValidationException if the dataRequest fails validation
      */
-    public static void validateRequest(final CityDataRequest dataRequest, final String requestId) {
+    public static void validateRequest(final CityDataRequest dataRequest) {
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
             Set<ConstraintViolation<CityDataRequest>> violations = validator.validate(dataRequest);
             if (!violations.isEmpty()) {
                 ConstraintViolation<CityDataRequest> firstViolation = violations.iterator().next();
-                throw new ValidationException(firstViolation.getMessage(), requestId);
+                throw new ValidationException(firstViolation.getMessage(), dataRequest.requestId());
             }
         }
     }

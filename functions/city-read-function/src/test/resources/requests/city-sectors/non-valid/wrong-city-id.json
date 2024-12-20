@@ -1,19 +1,29 @@
 {
-  "resource": "/my-resource",
-  "path": "/my-resource",
-  "httpMethod": "POST",
+  "version": "2.0",
+  "routeKey": "$default",
+  "rawPath": "/my/path",
   "headers": {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
+    "accept": "application/json",
+    "content-type": "application/json",
     "city-function": "findSectorsByCityId"
   },
   "requestContext": {
     "accountId": "123456789012",
-    "resourceId": "abc123",
-    "stage": "local",
+    "apiId": "api-id",
+    "domainName": "id.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "id",
+    "http": {
+      "method": "POST",
+      "path": "/my/path",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "192.0.2.1",
+      "userAgent": "agent"
+    },
     "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
-    "httpMethod": "POST",
-    "apiId": "1234567890"
+    "routeKey": "$default",
+    "stage": "$default",
+    "time": "12/Mar/2020:19:03:58 +0000",
+    "timeEpoch": 1583348638390
   },
   "body": "{\"cityId\":\"a0ecb466\"}",
   "isBase64Encoded": false

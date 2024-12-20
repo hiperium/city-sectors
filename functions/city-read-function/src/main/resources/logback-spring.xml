@@ -3,9 +3,9 @@
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
 
-    <springProperty scope="context" name="timezone" source="logging.hiperium.timezone" />
-    <springProperty scope="context" name="useCompactMode" source="logging.hiperium.useCompactMode" />
-    <springProperty scope="context" name="useFormattedTimestamps" source="logging.hiperium.useFormattedTimestamps" />
+    <springProperty scope="context" name="timezone" source="city.timezone" />
+    <springProperty scope="context" name="useCompactMode" source="city.logging.useCompactMode" />
+    <springProperty scope="context" name="useFormattedTimestamps" source="city.logging.useFormattedTimestamps" />
 
     <appender name="textAppender" class="ch.qos.logback.core.ConsoleAppender">
         <charset>UTF-8</charset>
@@ -33,19 +33,12 @@
         <appender-ref ref="textAppender"/>
     </root>
 
-    <springProfile name="local">
-        <logger name="org.springframework.boot.docker.compose" level="DEBUG" />
-    </springProfile>
-
-    <springProfile name="local | dev | qa">
+    <springProfile name="dev | qa">
         <logger name="io.awspring.cloud" level="DEBUG"/>
         <logger name="org.springframework.web" level="DEBUG"/>
         <logger name="org.springframework.cloud.function" level="DEBUG"/>
         <!-- Hiperium City -->
         <logger name="hiperium.city.read.function" level="DEBUG" additivity="false">
-            <appender-ref ref="jsonAppender"/>
-        </logger>
-        <logger name="hiperium.city.functions.common.utils" level="DEBUG" additivity="false">
             <appender-ref ref="jsonAppender"/>
         </logger>
     </springProfile>

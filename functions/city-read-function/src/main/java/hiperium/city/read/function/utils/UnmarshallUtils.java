@@ -1,22 +1,20 @@
 package hiperium.city.read.function.utils;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import hiperium.city.functions.common.enums.ErrorCode;
-import hiperium.city.functions.common.exceptions.CityException;
 import hiperium.city.functions.common.exceptions.ValidationException;
 import hiperium.city.functions.common.loggers.HiperiumLogger;
-import hiperium.city.functions.common.utils.FunctionUtils;
+import hiperium.city.functions.common.requests.CityIdRequest;
+import hiperium.city.functions.common.requests.FunctionRequest;
+import hiperium.city.functions.common.utils.DeserializerUtil;
 import hiperium.city.read.function.requests.CityDataRequest;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Utility class for converting function-specific objects and handling
- * related operations. This class provides methods for deserializing
- * request events into business objects.
- * This class is not meant to be instantiated.
+ * Utility class for handling the deserialization of API Gateway requests into specific data objects.
+ * This class provides methods to transform raw request payloads into domain-specific objects,
+ * ensuring that the required validation is properly applied during the deserialization process.
  */
+// TODO: change class name
 public final class UnmarshallUtils {
 
     private static final HiperiumLogger LOGGER = new HiperiumLogger(UnmarshallUtils.class);
@@ -26,22 +24,21 @@ public final class UnmarshallUtils {
     }
 
     /**
-     * Converts an APIGatewayProxyRequestEvent to a CityDataRequest by deserializing the request body.
+     * Deserializes the given API Gateway request to construct a {@link CityDataRequest}.
+     * The method ensures that the request body is not null or empty and extracts
+     * the city ID and request identifier for further processing.
      *
-     * @param event the APIGatewayProxyRequestEvent containing the request body to be deserialized into a CityDataRequest object
-     * @return a CityDataRequest object constructed from the deserialized request body
-     * @throws CityException if the deserialization process fails
+     * @param functionRequest The API Gateway request containing the raw input data.
+     * @return A {@link CityDataRequest} object containing the city ID and request identifier.
+     * @throws ValidationException if the request body is missing or empty.
      */
-    public static CityDataRequest deserializeRequest(final APIGatewayProxyRequestEvent event){
-        LOGGER.debug("Deserializing request body: {}", event.getBody());
-        if (Objects.isNull(event.getBody()) || event.getBody().isBlank()) {
-            throw new ValidationException("Request body is missing or empty.", event.getRequestContext().getRequestId());
+    public static CityDataRequest deserializeRequest(final FunctionRequest functionRequest){
+        LOGGER.debug("Deserializing request body: {}", functionRequest.body());
+        if (Objects.isNull(functionRequest.body()) || functionRequest.body().isBlank()) {
+            throw new ValidationException("Request body is missing or empty.",
+                functionRequest.requestContext().requestId());
         }
-        try {
-            return FunctionUtils.OBJECT_MAPPER.readValue(event.getBody(), CityDataRequest.class);
-        } catch (IOException exception) {
-            throw new CityException("Couldn't deserialize request body: " + event.getBody(),
-                ErrorCode.INTERNAL_002, exception);
-        }
+        CityIdRequest cityIdRequest = DeserializerUtil.deserializeCityId(functionRequest);
+        return new CityDataRequest(cityIdRequest, functionRequest.requestContext().requestId());
     }
 }

@@ -4,19 +4,24 @@
 FROM hiperium/city-builder:latest as builder
 WORKDIR /workspace
 
-COPY pom.xml    pom.xml
+COPY pom.xml pom.xml
 RUN  mvn dependency:go-offline -B
-COPY src        src
+COPY src     src
 
 RUN mvn -T 4C clean package -DskipTests -Ddependency-check.skip=true    && \
     mkdir -p target/extracted                                           && \
-    (cd target; unzip jar-assembly.zip -d extracted)
+    unzip target/java-assembly.zip -d target/extracted)
 
 #####################################################################################
 ############################ Stage 2: Application Image #############################
 #####################################################################################
-FROM public.ecr.aws/lambda/java:21-arm64
+FROM hiperium/city-lambda:latest
 
 COPY --from=builder /workspace/target/extracted ${LAMBDA_TASK_ROOT}
 
-CMD [ "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest" ]
+ENV AGENT_OUTPUT_DIR="/tmp/native-image-configs"
+ENV MAIN_CLASS="hiperium.city.read.function.FunctionApplication"
+
+RUN mkdir -p ${AGENT_OUTPUT_DIR}
+
+ENTRYPOINT [ "${LAMBDA_TASK_ROOT}/bootstrap" ]

@@ -1,8 +1,7 @@
 package hiperium.city.read.function.functions;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import hiperium.city.functions.common.loggers.HiperiumLogger;
-import hiperium.city.functions.common.responses.FunctionResponse;
+import hiperium.city.functions.common.requests.FunctionRequest;
+import hiperium.city.functions.common.utils.ResponseUtil;
 import hiperium.city.read.function.services.CityService;
 import hiperium.city.read.function.utils.ExceptionHandlerUtil;
 import hiperium.city.read.function.utils.UnmarshallUtils;
@@ -20,10 +19,9 @@ import java.util.function.Function;
  * in a reactive {@link Mono} stream.
  */
 @Component(FindCityFunction.FUNCTION_NAME)
-public class FindCityFunction implements Function<Message<APIGatewayProxyRequestEvent>, Mono<FunctionResponse>> {
+public class FindCityFunction implements Function<Message<FunctionRequest>, Mono<Message<String>>> {
 
     public static final String FUNCTION_NAME = "findCityById";
-    private static final HiperiumLogger LOGGER = new HiperiumLogger(FindCityFunction.class);
 
     private final CityService cityService;
 
@@ -32,19 +30,11 @@ public class FindCityFunction implements Function<Message<APIGatewayProxyRequest
     }
 
     @Override
-    public Mono<FunctionResponse> apply(Message<APIGatewayProxyRequestEvent> requestMessage) {
-        LOGGER.debug("Processing request to find city by ID: {}", requestMessage.getPayload());
-
+    public Mono<Message<String>> apply(Message<FunctionRequest> requestMessage) {
         return Mono.just(UnmarshallUtils.deserializeRequest(requestMessage.getPayload()))
-            .doOnNext(cityDataRequest ->
-                ValidationUtils.validateRequest(
-                    cityDataRequest,
-                    requestMessage.getPayload().getRequestContext().getRequestId()))
-            .flatMap(cityDataRequest ->
-                this.cityService.findActiveCityById(
-                    cityDataRequest,
-                    requestMessage.getPayload().getRequestContext().getRequestId()))
-            .map(FunctionResponse::success)
+            .doOnNext(ValidationUtils::validateRequest)
+            .flatMap(this.cityService::findActiveCityById)
+            .map(ResponseUtil::success)
             .onErrorResume(ExceptionHandlerUtil::handleException);
     }
 }

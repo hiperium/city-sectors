@@ -1,8 +1,5 @@
 [
   {
-    "interfaces":["jakarta.validation.constraints.Pattern"]
-  },
-  {
     "interfaces":["java.lang.reflect.ParameterizedType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
   },
   {
@@ -13,8 +10,5 @@
   },
   {
     "interfaces":["org.springframework.boot.context.properties.ConfigurationProperties"]
-  },
-  {
-    "interfaces":["org.springframework.web.bind.annotation.RequestMapping"]
   }
 ]

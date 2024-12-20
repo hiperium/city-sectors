@@ -1,12 +1,11 @@
 package hiperium.city.read.function.configurations;
 
 import hiperium.city.functions.common.loggers.HiperiumLogger;
-import hiperium.city.functions.common.utils.FunctionUtils;
 import org.springframework.cloud.function.context.DefaultMessageRoutingHandler;
 import org.springframework.cloud.function.context.MessageRoutingCallback;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
+import org.springframework.messaging.converter.MessageConverter;
 
 /**
  * Configuration class for defining beans related to message routing and handling
@@ -18,21 +17,28 @@ public class FunctionsConfig {
     private static final HiperiumLogger LOGGER = new HiperiumLogger(FunctionsConfig.class);
 
     /**
+     * Creates and registers a custom {@link MessageConverter} bean for converting messages
+     * in the messaging system.
+     *
+     * @return an instance of {@link MessageConverter} configured as {@link CustomMessageConverter}.
+     */
+    @Bean
+    public MessageConverter customMessageConverter() {
+        LOGGER.debug("Creating Custom Message Converter.");
+        return new CustomMessageConverter();
+    }
+
+    /**
      * Creates a custom {@link MessageRoutingCallback} bean to determine the routing result
      * of incoming messages based on a specific header value.
      *
      * @return a {@link MessageRoutingCallback} instance that provides custom routing logic
-     *         based on the message header.
+     * based on the message header.
      */
     @Bean
     public MessageRoutingCallback customRoutingCallback() {
-        LOGGER.debug("Creating Custom Message Routing Callback.");
-        return new MessageRoutingCallback() {
-            @Override
-            public String routingResult(Message<?> message) {
-                return (String) message.getHeaders().get(FunctionUtils.ROUTING_PARAMETER);
-            }
-        };
+        LOGGER.debug("Creating Custom Routing Callback.");
+        return new CustomRoutingCallback();
     }
 
     /**

@@ -1,7 +1,8 @@
 package hiperium.city.read.function.services;
 
 import hiperium.city.functions.common.exceptions.InactiveCityException;
-import hiperium.city.functions.tests.utils.DynamoDbTableTest;
+import hiperium.city.functions.common.requests.CityIdRequest;
+import hiperium.city.functions.tests.utils.DynamoDbTableUtil;
 import hiperium.city.read.function.FunctionApplication;
 import hiperium.city.read.function.common.TestContainersBase;
 import hiperium.city.read.function.requests.CityDataRequest;
@@ -28,20 +29,21 @@ public class CityServiceTest extends TestContainersBase {
     @Autowired
     private DynamoDbClient dynamoDbClient;
 
-    @Value("${cities.table.name}")
+    @Value("${city.table}")
     private String tableName;
 
     @BeforeEach
     void setup() {
-        DynamoDbTableTest.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
+        DynamoDbTableUtil.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
     }
 
     @Test
     @DisplayName("Find City by ID - Active")
     void givenCityId_whenFindActiveCity_mustReturnCityData() {
-        CityDataRequest cityDataRequest = new CityDataRequest(FunctionTestUtils.ACTIVE_CITY_ID);
+        CityIdRequest cityIdRequest = new CityIdRequest(FunctionTestUtils.ACTIVE_CITY_ID);
+        CityDataRequest cityDataRequest = new CityDataRequest(cityIdRequest, FunctionTestUtils.REQUEST_ID);
 
-        StepVerifier.create(this.cityService.findActiveCityById(cityDataRequest, FunctionTestUtils.REQUEST_ID))
+        StepVerifier.create(this.cityService.findActiveCityById(cityDataRequest))
             .assertNext(response -> {
                 assertThat(response).isNotNull();
                 assertThat(response.entityCommon()).isNotNull();
@@ -56,9 +58,10 @@ public class CityServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find City by ID - Inactive")
     void givenCityId_whenFindInactiveCity_mustReturnCityData() {
-        CityDataRequest cityDataRequest = new CityDataRequest(FunctionTestUtils.INACTIVE_CITY_ID);
+        CityIdRequest cityIdRequest = new CityIdRequest(FunctionTestUtils.INACTIVE_CITY_ID);
+        CityDataRequest cityDataRequest = new CityDataRequest(cityIdRequest, FunctionTestUtils.REQUEST_ID);
 
-        StepVerifier.create(this.cityService.findActiveCityById(cityDataRequest, FunctionTestUtils.REQUEST_ID))
+        StepVerifier.create(this.cityService.findActiveCityById(cityDataRequest))
             .expectErrorMatches(throwable -> throwable instanceof InactiveCityException)
             .verify();
     }

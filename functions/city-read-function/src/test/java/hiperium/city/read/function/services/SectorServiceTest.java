@@ -3,7 +3,8 @@ package hiperium.city.read.function.services;
 import hiperium.city.functions.common.enums.RecordStatus;
 import hiperium.city.functions.common.exceptions.InactiveCityException;
 import hiperium.city.functions.common.exceptions.ResourceNotFoundException;
-import hiperium.city.functions.tests.utils.DynamoDbTableTest;
+import hiperium.city.functions.common.requests.CityIdRequest;
+import hiperium.city.functions.tests.utils.DynamoDbTableUtil;
 import hiperium.city.read.function.FunctionApplication;
 import hiperium.city.read.function.common.TestContainersBase;
 import hiperium.city.read.function.requests.CityDataRequest;
@@ -29,20 +30,21 @@ public class SectorServiceTest extends TestContainersBase {
     @Autowired
     private DynamoDbClient dynamoDbClient;
 
-    @Value("${cities.table.name}")
+    @Value("${city.table}")
     private String tableName;
 
     @BeforeEach
     void setup() {
-        DynamoDbTableTest.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
+        DynamoDbTableUtil.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
     }
 
     @Test
     @DisplayName("Find sectors by City ID - Active")
     void givenActiveCityId_whenFindSectors_mustReturnActiveSectorsData() {
-        CityDataRequest cityDataRequest = new CityDataRequest(FunctionTestUtils.ACTIVE_CITY_ID);
+        CityIdRequest cityIdRequest = new CityIdRequest(FunctionTestUtils.ACTIVE_CITY_ID);
+        CityDataRequest cityDataRequest = new CityDataRequest(cityIdRequest, FunctionTestUtils.REQUEST_ID);
 
-        StepVerifier.create(this.sectorService.findActiveSectorsByCityId(cityDataRequest, FunctionTestUtils.REQUEST_ID))
+        StepVerifier.create(this.sectorService.findActiveSectorsByCityId(cityDataRequest))
             .assertNext(response -> {
                 Assertions.assertThat(response).isNotNull();
                 Assertions.assertThat(response).isNotEmpty();
@@ -58,9 +60,10 @@ public class SectorServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find sectors by City ID - Inactive")
     void givenInactiveCityId_whenFindSectors_mustReturnError() {
-        CityDataRequest cityDataRequest = new CityDataRequest(FunctionTestUtils.INACTIVE_CITY_ID);
+        CityIdRequest cityIdRequest = new CityIdRequest(FunctionTestUtils.INACTIVE_CITY_ID);
+        CityDataRequest cityDataRequest = new CityDataRequest(cityIdRequest, FunctionTestUtils.REQUEST_ID);
 
-        StepVerifier.create(this.sectorService.findActiveSectorsByCityId(cityDataRequest, FunctionTestUtils.REQUEST_ID))
+        StepVerifier.create(this.sectorService.findActiveSectorsByCityId(cityDataRequest))
             .expectErrorMatches(throwable -> throwable instanceof InactiveCityException)
             .verify();
     }
@@ -68,9 +71,10 @@ public class SectorServiceTest extends TestContainersBase {
     @Test
     @DisplayName("Find sectors by City ID - Non-existing")
     void givenNonExistingCityId_whenFindSectors_mustReturnError() {
-        CityDataRequest cityDataRequest = new CityDataRequest("non-existing-city-id");
+        CityIdRequest cityIdRequest = new CityIdRequest("non-existing-city-id");
+        CityDataRequest cityDataRequest = new CityDataRequest(cityIdRequest, FunctionTestUtils.REQUEST_ID);
 
-        StepVerifier.create(this.sectorService.findActiveSectorsByCityId(cityDataRequest, FunctionTestUtils.REQUEST_ID))
+        StepVerifier.create(this.sectorService.findActiveSectorsByCityId(cityDataRequest))
             .expectErrorMatches(throwable -> throwable instanceof ResourceNotFoundException)
             .verify();
     }

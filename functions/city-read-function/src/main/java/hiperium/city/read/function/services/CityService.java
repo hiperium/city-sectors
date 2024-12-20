@@ -3,6 +3,7 @@ package hiperium.city.read.function.services;
 import hiperium.city.functions.common.enums.RecordStatus;
 import hiperium.city.functions.common.exceptions.InactiveCityException;
 import hiperium.city.functions.common.exceptions.ResourceNotFoundException;
+import hiperium.city.read.function.commons.TimeZoneProvider;
 import hiperium.city.read.function.entities.CityEntity;
 import hiperium.city.read.function.mappers.FunctionMapper;
 import hiperium.city.read.function.repositories.CityRepository;
@@ -23,10 +24,12 @@ public class CityService {
 
     private final FunctionMapper functionMapper;
     private final CityRepository cityRepository;
+    private final TimeZoneProvider timeZoneProvider;
 
-    public CityService(FunctionMapper functionMapper, CityRepository cityRepository) {
+    public CityService(FunctionMapper functionMapper, CityRepository cityRepository, TimeZoneProvider timeZoneProvider) {
         this.functionMapper = functionMapper;
         this.cityRepository = cityRepository;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -34,18 +37,23 @@ public class CityService {
      * and applies a mapping function to convert the response into a CityEntity.
      *
      * @param cityDataRequest   the ID of the city to be retrieved
-     * @param requestId         the unique identifier of the cityDataRequest for tracking purposes.
      * @return a {@link Mono} emitting a {@link CityEntity} representing the active city,
      *         or completing with an error if the city cannot be found or mapped
      */
-    public Mono<CityEntity> findActiveCityById(final CityDataRequest cityDataRequest,
-                                               final String requestId) {
-        return this.cityRepository.findByCityId(cityDataRequest.cityId(), requestId)
+    public Mono<CityEntity> findActiveCityById(final CityDataRequest cityDataRequest) {
+        return this.cityRepository.findByCityId(cityDataRequest.cityIdRequest().cityId(), cityDataRequest.requestId())
             .flatMap(queryResponse ->
-                retrieveCityData(cityDataRequest.cityId(), queryResponse, requestId))
-            .map(this.functionMapper::mapCityDataResponse)
+                retrieveCityData(
+                    cityDataRequest.cityIdRequest().cityId(),
+                    queryResponse,
+                    cityDataRequest.requestId()))
+            .map(item ->
+                this.functionMapper.mapCityDataResponse(item, this.timeZoneProvider))
             .flatMap(cityEntity ->
-                validateCityStatus(cityDataRequest.cityId(), cityEntity, requestId));
+                validateCityStatus(
+                    cityDataRequest.cityIdRequest().cityId(),
+                    cityEntity,
+                    cityDataRequest.requestId()));
     }
 
     private static Mono<Map<String, AttributeValue>> retrieveCityData(final String cityId,

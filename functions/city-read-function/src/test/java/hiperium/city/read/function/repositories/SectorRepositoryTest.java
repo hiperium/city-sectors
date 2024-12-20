@@ -1,7 +1,7 @@
 package hiperium.city.read.function.repositories;
 
 import hiperium.city.functions.common.enums.RecordStatus;
-import hiperium.city.functions.tests.utils.DynamoDbTableTest;
+import hiperium.city.functions.tests.utils.DynamoDbTableUtil;
 import hiperium.city.read.function.FunctionApplication;
 import hiperium.city.read.function.common.TestContainersBase;
 import hiperium.city.read.function.utils.FunctionTestUtils;
@@ -27,12 +27,12 @@ public class SectorRepositoryTest extends TestContainersBase {
     @Autowired
     private DynamoDbClient dynamoDbClient;
 
-    @Value("${cities.table.name}")
+    @Value("${city.table}")
     private String tableName;
 
     @BeforeEach
     void setup() {
-        DynamoDbTableTest.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
+        DynamoDbTableUtil.waitForDynamoDbToBeReady(this.dynamoDbClient, this.tableName, 12, 3);
     }
 
     @Test

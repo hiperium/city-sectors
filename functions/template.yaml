@@ -89,6 +89,17 @@ Resources:
     UpdateReplacePolicy: Retain
     DeletionPolicy: !Ref ResourceDeletionPolicy
 
+  ReadFunctionDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: 'city-read-function-dlq'
+      VisibilityTimeout: 300            # 5 minutes
+      MaximumMessageSize: 262144        # 256 KB
+      MessageRetentionPeriod: 1209600   # 14 days
+      ReceiveMessageWaitTimeSeconds: 20
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: !Ref ResourceDeletionPolicy
+
   ReadFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -96,14 +107,22 @@ Resources:
       FunctionName: 'city-read-function'
       Description: 'Read city data function.'
       Handler: 'org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest'
+      Architectures:
+        - arm64
+      Runtime: provided.al2023
+      MemorySize: 512
+      Timeout: 30
       LoggingConfig:
         LogGroup: !Ref ReadFunctionLogGroup
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt ReadFunctionDLQ.Arn
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref CityTable
       Environment:
         Variables:
-          CITIES_TABLE_NAME: !Ref CityTable
+          CITY_TABLE_NAME: !Ref CityTable
           SPRING_PROFILES_ACTIVE: !Ref SpringProfile
     Metadata:
       BuildMethod: makefile

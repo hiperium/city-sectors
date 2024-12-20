@@ -9,8 +9,12 @@ services:
       dockerfile: tools/docker/Dockerfile
     ports:
       - "9000:8080"
+    environment:
+      - AWS_LAMBDA_FUNCTION_NAME=city-read-function
     env_file:
       - utils/docker/lambda.env
+    volumes:
+      - ./utils/docker/native-image-configs:/tmp/native-image-configs
     networks:
       - "cities-network"
 
