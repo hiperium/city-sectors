@@ -1,0 +1,29 @@
+#####################################################################################
+############################# Stage 1: Builder Image ################################
+#####################################################################################
+FROM hiperium/city-builder:latest AS builder
+WORKDIR /workspace
+
+COPY tools/shell/java/bootstrap         bootstrap
+COPY target/function-java-assembly.zip  function-java-assembly.zip
+
+RUN mkdir extracted && \
+    unzip function-java-assembly.zip -d extracted/
+
+#####################################################################################
+############################## Stage 2: Function Image ##############################
+#####################################################################################
+FROM hiperium/city-lambda:latest
+
+COPY --from=builder /workspace/extracted ${LAMBDA_TASK_ROOT}
+COPY --from=builder /workspace/bootstrap ${LAMBDA_RUNTIME_DIR}/bootstrap
+
+ENV AGENT_OUTPUT_DIR="/tmp/native-image-configs"
+ENV MAIN_CLASS="hiperium.city.read.function.FunctionApplication"
+
+RUN rm -rf ${AGENT_OUTPUT_DIR}    && \
+    mkdir -p ${AGENT_OUTPUT_DIR}  && \
+    chmod 755 ${LAMBDA_RUNTIME_DIR}/bootstrap
+
+ENTRYPOINT [ "/lambda-entrypoint.sh" ]
+CMD [ "org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest" ]

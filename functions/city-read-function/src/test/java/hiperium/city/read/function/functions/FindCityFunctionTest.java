@@ -4,6 +4,7 @@ import hiperium.city.functions.common.requests.FunctionRequest;
 import hiperium.city.functions.common.utils.DeserializerUtil;
 import hiperium.city.functions.common.utils.ResponseUtil;
 import hiperium.city.functions.tests.utils.DynamoDbTableUtil;
+import hiperium.city.functions.tests.utils.ResourceStreamUtil;
 import hiperium.city.read.function.FunctionApplication;
 import hiperium.city.read.function.common.TestContainersBase;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,14 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -53,7 +51,7 @@ class FindCityFunctionTest extends TestContainersBase {
     @Test
     @DisplayName("Valid requests")
     void givenValidRequest_whenInvokeLambdaFunction_thenExecuteSuccessfully() throws IOException {
-        String jsonContent = this.getJsonFromFilePath("requests/city/valid/find-city-by-id-request.json");
+        String jsonContent = ResourceStreamUtil.getJsonFromFilePath("requests/city/valid/find-city-by-id-request.json");
         assertThat(jsonContent).isNotNull();
 
         FunctionRequest functionRequest = DeserializerUtil.fromJson(jsonContent);
@@ -85,7 +83,7 @@ class FindCityFunctionTest extends TestContainersBase {
         "requests/city/non-valid/non-existing-city.json"
     })
     void givenNonValidRequests_whenInvokeLambdaFunction_thenReturnErrors(String jsonFilePath) throws IOException {
-        String jsonContent = this.getJsonFromFilePath(jsonFilePath);
+        String jsonContent = ResourceStreamUtil.getJsonFromFilePath(jsonFilePath);
         assertThat(jsonContent).isNotNull();
 
         FunctionRequest functionRequest = DeserializerUtil.fromJson(jsonContent);
@@ -113,13 +111,5 @@ class FindCityFunctionTest extends TestContainersBase {
 
     private Function<Message<FunctionRequest>, Mono<Message<String>>> findFunctionUnderTest() {
         return this.functionCatalog.lookup(Function.class, FindCityFunction.FUNCTION_NAME);
-    }
-
-    private String getJsonFromFilePath(String pathOfJsonDataFile) throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(pathOfJsonDataFile);
-        if (Objects.isNull(inputStream)) {
-            throw new IOException("File not found: " + pathOfJsonDataFile);
-        }
-        return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 }

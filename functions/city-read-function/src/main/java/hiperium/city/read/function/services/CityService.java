@@ -26,7 +26,9 @@ public class CityService {
     private final CityRepository cityRepository;
     private final TimeZoneProvider timeZoneProvider;
 
-    public CityService(FunctionMapper functionMapper, CityRepository cityRepository, TimeZoneProvider timeZoneProvider) {
+    public CityService(FunctionMapper functionMapper,
+                       CityRepository cityRepository,
+                       TimeZoneProvider timeZoneProvider) {
         this.functionMapper = functionMapper;
         this.cityRepository = cityRepository;
         this.timeZoneProvider = timeZoneProvider;

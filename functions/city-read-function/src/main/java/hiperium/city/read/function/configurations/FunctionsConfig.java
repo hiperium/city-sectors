@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MessageConverter;
 
 /**
- * Configuration class for defining beans related to message routing and handling
- * in the messaging system.
+ * Configuration class for defining custom beans and Spring Cloud Function implementations.
  */
 @Configuration(proxyBeanMethods = false)
 public class FunctionsConfig {
@@ -43,9 +42,6 @@ public class FunctionsConfig {
 
     /**
      * Creates and registers a bean for handling non-routable messages in the messaging system.
-     * This method returns an instance of {@link NonRoutableMessageHandler}, which is a custom
-     * implementation of {@link DefaultMessageRoutingHandler} designed to process messages
-     * that cannot be routed to a specified function.
      *
      * @return an instance of {@link DefaultMessageRoutingHandler} configured to handle non-routable messages.
      */

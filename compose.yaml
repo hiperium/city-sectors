@@ -13,8 +13,6 @@ services:
       - AWS_LAMBDA_FUNCTION_NAME=city-read-function
     env_file:
       - utils/docker/lambda.env
-    volumes:
-      - ./utils/docker/native-image-configs:/tmp/native-image-configs
     networks:
       - "cities-network"
 
@@ -24,7 +22,7 @@ services:
     ports:
       - "4566:4566"
     env_file:
-      - functions/city-read-function/tools/docker/localstack.env
+      - utils/docker/localstack.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./functions/city-read-function/src/test/resources/localstack/table-data.json:/var/lib/localstack/table-data.json

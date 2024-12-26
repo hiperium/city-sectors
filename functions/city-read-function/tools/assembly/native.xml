@@ -17,7 +17,7 @@
             <fileMode>0775</fileMode>
         </fileSet>
         <fileSet>
-            <directory>tools/shell</directory>
+            <directory>tools/shell/native</directory>
             <outputDirectory>/</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <includes>

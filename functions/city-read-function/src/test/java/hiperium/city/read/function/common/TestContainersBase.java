@@ -8,8 +8,9 @@ import org.testcontainers.utility.MountableFile;
 
 public abstract class TestContainersBase {
 
-    private static final LocalStackContainer LOCALSTACK_CONTAINER;
     private static final String LOCALSTACK_IMAGE = "localstack/localstack:latest";
+
+    protected static final LocalStackContainer LOCALSTACK_CONTAINER;
 
     // Singleton containers.
     // See: https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers

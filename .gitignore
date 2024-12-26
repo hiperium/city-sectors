@@ -50,6 +50,7 @@ amplify/
 *.ear
 *.nar
 hs_err_pid*
+/utils/docker/native-image-configs/*
 
 ##############################
 ## Maven
